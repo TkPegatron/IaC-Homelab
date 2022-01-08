@@ -1,0 +1,5 @@
+- name: Ensure prerequisites are met by the target system
+  ansible.builtin.import_tasks: prerequisites.yaml
+
+- name: Configure DNSMasq
+  ansible.builtin.import_tasks: configure.yaml

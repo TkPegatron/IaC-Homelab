@@ -1,0 +1,72 @@
+- name: Deploy DNSMasq as the network's DNS and DHCP service
+  block:
+  - name: "Template DNSMasq configuration for PiHole container"
+    block:
+      - name: Ensure needed directories are present
+        ansible.builtin.file:
+          path: "{{ item }}"
+          state: directory
+        loop:
+          - "{{ config_repo_path }}/opt/pihole-etc/pihole/"
+          - "{{ config_repo_path }}/opt/pihole-etc/dnsmasq.d"
+
+      - name: Set destination for the generated hostname file
+        ansible.builtin.set_facts:
+         auto_addn_hosts_path: "{{ config_repo_path }}/opt/pihole-etc/pihole/ansible.list"
+
+      - name: Template DHCP configuration
+        ansible.builtin.template:
+          source: dnsmasq-dhcp.conf.j2
+          dest: "{{ config_repo_path }}/opt/pihole-etc/dnsmasq.d/10-ansible-dhcp.conf"
+
+      - name: Template DNS configuration
+        ansible.builtin.template:
+          source: dnsmasq-dns.conf.j2
+          dest: "{{ config_repo_path }}/opt/pihole-etc/dnsmasq.d/11-ansible-dns.conf"
+
+      - name: Template in-network hostnames for resolution
+        ansible.builtin.template:
+          source: dnsmasq-host.list.j2
+          dest: "auto_addn_hosts_path"
+    when: dnsmasq_type == "pihole"
+
+  - name: "Template DNSMasq configuration for standard"
+    block:
+      - name: Ensure needed directories are present
+        ansible.builtin.file:
+          path: "{{ item }}"
+          state: directory
+        loop:
+          - "{{ config_repo_path }}/etc/dnsmasq.d/"
+
+      - name: Set destination for the generated hostname file
+        ansible.builtin.set_facts:
+          auto_addn_hosts_path: "{{config_repo_path}}/etc/ansible-dnsmasq.list"
+
+      - name: Template DHCP configuration
+        ansible.builtin.template:
+          source: dnsmasq-dhcp.conf.j2
+          dest: "{{ config_repo_path }}/etc/dnsmasq.d/10-ansible-dhcp.conf"
+
+      - name: Template DNS configuration
+        ansible.builtin.template:
+          source: dnsmasq-dns.conf.j2
+          dest: "{{ config_repo_path }}/etc/dnsmasq.d/11-ansible-dns.conf"
+
+      - name: Template in-network hostnames for resolution
+        ansible.builtin.template:
+          source: dnsmasq-host.list.j2
+          dest: "auto_addn_hosts_path"
+    when: dnsmasq_type != "pihole"
+  when: action == "deploy"
+
+- name: Remove DNSMasq as the network's DNS and DHCP service
+  block:
+    - name: Remove configuration files from the repository
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ config_repo_path }}/etc/dnsmasq.d/"
+        - "{{ config_repo_path }}/opt/pihole-etc"
+  when: action == "remove"

@@ -1,0 +1,17 @@
+---
+- name: Restart and enable bird systemd service
+  ansible.builtin.service:
+    name: bird.service
+    state: restarted
+    enabled: true
+  listen: "restart bird"
+  become: true
+  when: (bgp_state|default('absent')) == 'present'
+  
+- name: Stop and disable BIRD systemd service
+  ansible.builtin.service:
+    name: bird.service
+    state: stopped
+    enabled: false
+  listen: "restart bird"
+  when: (bgp_state|default('absent')) != 'present'

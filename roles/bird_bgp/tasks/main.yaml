@@ -1,0 +1,39 @@
+- name: "Install prerequisite packages"
+  ansible.builtin.dnf:
+    name: bird
+    state: "{{bgp_state|default('absent')}}"
+  when: ansible_os_family == "RedHat" and not ansible_pkg_mgr == "atomic_container"
+
+- name: "For rpm-ostree based distros"
+  community.general.rpm_ostree_pkg:
+    name: bird
+    state: "{{bgp_state|default('absent')}}"
+  register: ostree_out
+  when: ansible_os_family == "RedHat" and ansible_pkg_mgr == "atomic_container"
+
+- name: "Apply pending changes to the live system"
+  ansible.builtin.command:
+    cmd: "rpm-ostree ex apply-live --allow-replacement"
+  when: ostree_out.changed
+  
+#- name: "(DEBUG) Display hostvars for targeted host"
+#  debug:
+#    msg: "{{hostvars[item]}}"
+#  loop: "{{ansible_play_hosts}}"
+  
+- name: "Template BIRD configuration"
+  ansible.builtin.template:
+    src: 'bird.conf.j2'
+    dest: '/etc/bird.conf'
+    mode: 0640
+    owner: root
+    group: bird
+    validate: /usr/sbin/bird -p -c %s
+  notify: "restart bird"
+  when: (bgp_state|default('absent')) == 'present'
+
+- name: "Ensure BIRD configuration state matches"
+  ansible.builtin.file:
+    path: "/etc/bird.conf"
+    state: "{{bgp_state|default('absent')|replace('present','file')}}"
+  notify: "restart bird"

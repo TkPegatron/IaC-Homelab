@@ -1,0 +1,3 @@
+action: deploy
+dnsmasq_type: "standard"
+config_repo_path: "{{configuration_repository}}/{{ansible_hostname}}"
