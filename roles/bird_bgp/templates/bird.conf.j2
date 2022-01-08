@@ -31,8 +31,7 @@ protocol kernel kernel_v6 {
 };
 
 template bgp internal_bgp {
-  local {{ (ansible_all_ipv4_addresses | ansible.netcommon.ipaddr(network_facts.control_plane_prefix) | list)[0] }} as {{bird_ibgp_asn}};
-  password "{{bird_ibgp_passwd}}";
+  password "{{ibgp_passwd}}";
   startup hold time 0;
   graceful restart on;
   setkey on;
@@ -53,14 +52,17 @@ template bgp internal_bgp {
   };
 };
 
-{%for n in (hostvars | json_query("*.inventory_hostname")| reject('equalto',inventory_hostname)) %}
-{% set hostname = n.split('.')[0].lower().replace('-','_')%}
-{% if hostvars[n].ansible_all_ipv4_addresses is defined and (hostvars[n].bgp_state|default('')) == 'present' %}
-protocol bgp {{ hostname }} from internal_bgp {
-  neighbor {{ (hostvars[n].ansible_all_ipv4_addresses | ansible.netcommon.ipaddr(network_facts.control_plane_prefix) | list)[0] }} as {{bird_ibgp_asn}};
+{#
+TODO: Add support for IPv6
+#}
+{% for peer in ibgp_peers %}
+protocol bgp {{ peer.name }} from internal_bgp {
+  local {{ (ansible_all_ipv4_addresses | ansible.netcommon.ipaddr(peer.ip4_cidr_address) | list)[0] }} as {{ibgp_asn}};
+  neighbor {{ peer.ip4_cidr_address }} as {{ibgp_asn}};
+  {% if peer.password is defined %}"{{peer.password}}";{% endif %}
+  {% if not (peer.bfd | default(true)) %}bfd off;{% endif %}
 };
 
-{% endif%}
 {%endfor%}
 protocol bfd {
     interface "*" {
@@ -68,11 +70,10 @@ protocol bfd {
         min tx interval 100 ms;
         idle tx interval 300 ms;
         multiplier 10;
-        password "{{bird_ibgp_passwd}}";
+        password "{{ibgp_passwd}}";
     };
-{%for n in (ansible_play_hosts | reject('equalto',inventory_hostname)) %}
-{% if hostvars[n].ansible_all_ipv4_addresses is defined%}
-    neighbor {{ (hostvars[n].ansible_all_ipv4_addresses | ansible.netcommon.ipaddr(network_facts.control_plane_prefix) | list)[0] }};
-{% endif%}
+
+{% for peer in ibgp_peers %}
+    neighbor {{ peer.ip4_cidr_address }};
 {%endfor%}
 };
