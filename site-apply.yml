@@ -1,0 +1,23 @@
+#- name: "Send Common configuration to all systems"
+#  hosts: all
+#  become: true
+#  roles: 
+#    - common
+
+- name: "Configure edge firewall"
+  hosts: rpi-edge-fw.int.zynthovian.xyz
+  become: true
+  roles:
+    - sshd_mfa
+    - bird_bgp
+
+- name: "Configure on-site hypervisors and deploy VM's"
+  hosts: kvm_hypervisors
+  become: true
+  roles:
+    #- kvm-libvirt
+    #- terraform
+    - bird_bgp
+
+#- name: "Deploy k3s environment across on-site hypervisors"
+#  ansible.builtin.import_playbook: kube-install.yml
