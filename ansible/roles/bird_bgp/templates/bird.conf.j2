@@ -67,6 +67,9 @@ protocol bgp {{ peer.name | replace('-','_') }} from internal_bgp {
 {% if not (peer.bfd | default(true)) %}
   bfd off;
 {% endif %}
+{% if (peer.rr_client | default(false)) %}
+  rr client;
+{% endif %}
 };
 
 {%endfor%}
@@ -80,6 +83,8 @@ protocol bfd {
     };
 
 {% for peer in ibgp_peers %}
+{%  if (peer.bfd | default(true)) %}
     neighbor {{ peer.ip4_cidr_address | ansible.netcommon.ipv4('address') }};
+{%  endif %}
 {%endfor%}
 };

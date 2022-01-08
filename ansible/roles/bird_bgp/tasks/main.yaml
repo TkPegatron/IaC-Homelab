@@ -16,10 +16,9 @@
     cmd: "rpm-ostree ex apply-live --allow-replacement"
   when: ostree_out.changed
   
-#- name: "(DEBUG) Display hostvars for targeted host"
-#  debug:
-#    msg: "{{hostvars[item]}}"
-#  loop: "{{ansible_play_hosts}}"
+- name: "(DEBUG) Print templated file"
+  debug:
+    msg: "{{ lookup('template','bird.conf.j2') }}"
   
 - name: "Template BIRD configuration"
   ansible.builtin.template:

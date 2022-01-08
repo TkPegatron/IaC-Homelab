@@ -1,0 +1,14 @@
+{
+    "python.formatting.provider": "black",
+    "discord.enabled": true,
+    "files.associations": {
+        "**/ansible/**/*.yml": "ansible",
+        "**/ansible/**/inventory/**/*.yml": "yaml",
+        "**/terraform/**/*.tf": "terraform"
+    },
+    "yaml.schemas": {
+        "Kubernetes": "cluster/*.yaml"
+    },
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs":"active"
+}

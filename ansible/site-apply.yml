@@ -8,7 +8,7 @@
   hosts: rpi-edge-fw.int.zynthovian.xyz
   become: true
   roles:
-    - sshd_mfa
+    #- sshd_mfa
     - bird_bgp
 
 - name: "Configure on-site hypervisors and deploy VM's"
