@@ -4,5 +4,6 @@ resources:
 - gotk-components.yaml
 - gotk-sync.yaml
 - charts
+- sealed-secrets
 patchesStrategicMerge:
   - ./gotk-patches.yaml
