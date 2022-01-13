@@ -7,5 +7,4 @@ resources:
   - jetstack-charts.yaml
   - k8s-at-home-charts.yaml
   - metrics-server-charts.yaml
-  - sealed-secrets.yaml
   - nfs-subdir-external-provisioner-charts.yaml
