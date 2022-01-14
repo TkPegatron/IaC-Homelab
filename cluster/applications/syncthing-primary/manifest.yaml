@@ -6,11 +6,7 @@ metadata:
   name: syncthing-documents
   namespace: applications
   labels:
-    helm.sh/chart: syncthing-3.3.0
-    app.kubernetes.io/name: syncthing
-    app.kubernetes.io/instance: syncthing
-    app.kubernetes.io/version: "1.18.2"
-    app.kubernetes.io/managed-by: Helm
+    pv-name: syncthing-documents
 spec:
   storageClassName: "nfs"
   persistentVolumeReclaimPolicy: Retain
@@ -31,11 +27,7 @@ metadata:
   name: syncthing-coderepos
   namespace: applications
   labels:
-    helm.sh/chart: syncthing-3.3.0
-    app.kubernetes.io/name: syncthing
-    app.kubernetes.io/instance: syncthing
-    app.kubernetes.io/version: "1.18.2"
-    app.kubernetes.io/managed-by: Helm
+    pv-name: syncthing-coderepos
 spec:
   storageClassName: "nfs"
   persistentVolumeReclaimPolicy: Retain
@@ -56,11 +48,7 @@ metadata:
   name: syncthing-data
   namespace: applications
   labels:
-    helm.sh/chart: syncthing-3.3.0
-    app.kubernetes.io/name: syncthing
-    app.kubernetes.io/instance: syncthing
-    app.kubernetes.io/version: "1.18.2"
-    app.kubernetes.io/managed-by: Helm
+    pv-name: syncthing-data
 spec:
   storageClassName: "nfs"
   persistentVolumeReclaimPolicy: Retain
@@ -93,6 +81,9 @@ spec:
   resources:
     requests:
       storage: "1Gi"
+  selector:
+    matchLabels:
+      pv-name: syncthing-data
 ---
 # Source: Administrator Addition
 kind: PersistentVolumeClaim
@@ -113,6 +104,9 @@ spec:
   resources:
     requests:
       storage: "1Gi"
+  selector:
+    matchLabels:
+      pv-name: syncthing-documents
 ---
 # Source: Administrator Addition
 kind: PersistentVolumeClaim
@@ -133,6 +127,9 @@ spec:
   resources:
     requests:
       storage: "1Gi"
+  selector:
+    matchLabels:
+      pv-name: syncthing-coderepos
 ---
 # Source: syncthing/templates/common.yaml
 apiVersion: v1
