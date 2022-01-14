@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
 - gotk-components.yaml
 - gotk-sync.yaml
-- helm-reops
+- helm-repos
 patchesStrategicMerge:
   - ./gotk-patches.yaml
