@@ -28,11 +28,11 @@ spec:
           password: "${SECRET_BGP_PASSWORD}"
           peer-address: 10.10.0.1
           peer-asn: 64627
-    prometheus:
-      podMonitor:
-        enabled: true
-      prometheusRule:
-        enabled: true
+    #prometheus:
+    #  podMonitor:
+    #    enabled: true
+    #  prometheusRule:
+    #    enabled: true
     speaker:
       tolerations:
         - effect: "NoExecute"
