@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m0s
-  path: ./network-components
+  path: ./cluster/network-components
   prune: false
   sourceRef:
     kind: GitRepository
