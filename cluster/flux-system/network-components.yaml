@@ -8,7 +8,7 @@ spec:
   interval: 10m0s
   dependsOn:
     - name: namespaces
-  path: ./cluster/network-components
+  path: ./network-components
   prune: false
   sourceRef:
     kind: GitRepository
