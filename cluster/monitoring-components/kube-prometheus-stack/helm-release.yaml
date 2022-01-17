@@ -109,9 +109,9 @@ spec:
           ingressClassName: "nginx"
           hosts:
             - "prometheus.${SECRET_PUBLIC_DOMAIN}"
-          tls:
-            - hosts:
-                - "prometheus.${SECRET_PUBLIC_DOMAIN}"
+          #tls:
+          #  - hosts:
+          #      - "prometheus.${SECRET_PUBLIC_DOMAIN}"
         prometheusSpec:
           replicas: 1
           replicaExternalLabelName: "replica"
