@@ -67,10 +67,6 @@ spec:
         openvpn:
           auth: ${SECRET_OPENVPN_STRING}
 
-        securityContext:
-          runAsUser: 568
-          runAsGroup: 568
-
         env:
           TZ: 'America/Chicago'
           IPTABLES_BACKEND: nft
