@@ -3,7 +3,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: "${SECRET_PUBLIC_DOMAIN/./-}"
-  namespace: networking
+  namespace: network-components
 spec:
   secretTemplate:
     annotations:
