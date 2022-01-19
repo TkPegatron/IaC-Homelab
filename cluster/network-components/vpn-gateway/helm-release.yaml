@@ -91,6 +91,10 @@ spec:
               ports:
                 - port: 2049
                   protocol: UDP
+                - port: 53
+                  protocol: UDP
+                - port: 53
+                  protocol: TCP
             - to:
                 - ipBlock:
                     cidr: "10.10.0.0/16"
