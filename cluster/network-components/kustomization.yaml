@@ -6,4 +6,4 @@ resources:
   - metallb
   - ingress-nginx
   - vpn-gateway
-#  - wildcard-certificate
+  - cert-manager
