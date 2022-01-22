@@ -37,8 +37,8 @@ spec:
       VPN_INTERFACE: tun0
       VPN_BLOCK_OTHER_TRAFFIC: true
       VPN_TRAFFIC_PORT: 2049
-      VPN_LOCAL_CIDRS: '172.22.0.0/16'
-      NOT_ROUTED_TO_GATEWAY_CIDRS: '10.60.0.0/16 10.61.0.0/16'
+      VPN_LOCAL_CIDRS: '172.16.0.0/12 10.10.0.0/16 10.60.0.0/16 10.61.0.0/16'
+      NOT_ROUTED_TO_GATEWAY_CIDRS: '172.16.0.0/12 10.10.0.0/16 10.60.0.0/16 10.61.0.0/16'
       # Use a different VXLAN network segment that does not conflict with the above
       VXLAN_IP_NETWORK: "192.168.242"
       VXLAN_ID: 43
@@ -63,6 +63,10 @@ spec:
       failureThreshold: 1
 
     addons:
+    
+      netshoot:
+        enabled: true
+        
       vpn:
         enabled: true
         type: openvpn
@@ -100,6 +104,8 @@ spec:
                   protocol: TCP
             - to:
                 - ipBlock:
-                    cidr: "10.10.0.0/16"
+                    cidr: "10.0.0.0/8"
                 - ipBlock:
-                    cidr: "10.43.0.0/16"
+                    cidr: "172.16.0.0/12"
+            - to:
+                - namespaceSelector: {}
