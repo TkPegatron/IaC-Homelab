@@ -22,16 +22,16 @@ spec:
       tag: v1.4.0
 
     routed_namespaces:
-      - downloads
+      - downloads-vpn
 
-#    publicPorts:
-#      - hostname:  # hostname assigned to the pod
-#        IP: 10 # must be an integer between 2 and VXLAN_GATEWAY_FIRST_DYNAMIC_IP (20 by default)
-#        ports:
-#          - type: udp
-#            port: ${VPN_FORWARDED_PORT_1}
-#          - type: tcp
-#            port: ${VPN_FORWARDED_PORT_1}
+    publicPorts:
+      - hostname: torrent # hostname assigned to the pod
+        IP: 10 # must be an integer between 2 and VXLAN_GATEWAY_FIRST_DYNAMIC_IP (20 by default)
+        ports:
+          - type: udp
+            port: ${SECRET_OPENVPN_PORT}
+          - type: tcp
+            port: ${SECRET_OPENVPN_PORT}
 
     settings:
     #  NOT_ROUTED_TO_GATEWAY_CIDRS: ''
