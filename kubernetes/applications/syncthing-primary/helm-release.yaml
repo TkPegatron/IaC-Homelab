@@ -17,6 +17,15 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    service:
+        listen:
+            type: loadBalancer
+            annotations:
+                metallb.universe.tf/allow-shared-ip: syncthing
+        discovery:
+            type: loadBalancer
+            annotations:
+                metallb.universe.tf/allow-shared-ip: syncthing
     persistence:
         data:
             enabled: true
