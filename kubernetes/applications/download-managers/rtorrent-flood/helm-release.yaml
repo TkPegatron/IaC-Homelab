@@ -21,10 +21,12 @@ spec:
     persistence:
         config:
             enabled: true
+            storageClass: nfs-client
         downloads:
             enabled: true
             type: custom
             mountPath: /downloads
+            storageClass: nfs
             volumeSpec:
                 nfs:
                     server: 10.10.0.1
