@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - syncthing-primary
   - download-managers
+  - vpn-terminal-deployment.yaml
