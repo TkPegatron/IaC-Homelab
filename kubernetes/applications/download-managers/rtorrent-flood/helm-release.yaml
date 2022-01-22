@@ -18,6 +18,8 @@ spec:
       interval: 5m
   values:
     hostname: torrent # needed for an static IP
+    podAnnotations:
+      setGateway: "true"
     persistence:
         config:
             enabled: true
