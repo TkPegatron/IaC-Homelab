@@ -1,2 +1,7 @@
 ansible/collections/
 Sparse-files-please-move/
+kubernetes/kubeconfig
+kubernetes/.old
+*.decrypted.yaml
+configuration/***
+docs/***
