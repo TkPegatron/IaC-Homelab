@@ -19,11 +19,11 @@ spec:
   values:
     service:
         listen:
-            type: loadBalancer
+            type: LoadBalancer
             annotations:
                 metallb.universe.tf/allow-shared-ip: syncthing
         discovery:
-            type: loadBalancer
+            type: LoadBalancer
             annotations:
                 metallb.universe.tf/allow-shared-ip: syncthing
     persistence:
