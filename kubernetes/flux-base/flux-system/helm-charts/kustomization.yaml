@@ -9,4 +9,4 @@ resources:
   - metrics-server-charts.yaml
   - metallb-charts.yaml
   - nfs-subdir-external-provisioner-charts.yaml
-  - kube-prometheus-stack.yaml
+  - prometheus-community-charts.yaml
