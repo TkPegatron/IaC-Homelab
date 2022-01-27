@@ -27,6 +27,7 @@ spec:
         type: custom
         mountPath: /downloads
         storageClass: nfs
+        accessMode: ReadWriteMany
         volumeSpec:
             nfs:
                 server: 10.10.0.1
@@ -34,6 +35,7 @@ spec:
       tvseries:
         enabled: true
         type: custom
+        accessMode: ReadWriteMany
         mountPath: /media/TVSeries
         volumeSpec:
           nfs:
