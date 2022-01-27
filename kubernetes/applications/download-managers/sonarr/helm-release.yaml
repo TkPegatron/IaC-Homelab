@@ -44,7 +44,7 @@ spec:
               /mnt/media/Videos/TVSeries
     initContainers:
       wait-for-gateway-mutator:
-        image: k8s.gcr.io/busybox
+        image: curlimages/curl
         args:
         - /bin/sh
         - -c

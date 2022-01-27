@@ -35,7 +35,7 @@ spec:
                     path: /mnt/media/Downloads/Torrent
     initContainers:
       wait-for-gateway-mutator:
-        image: k8s.gcr.io/busybox
+        image: curlimages/curl
         args:
         - /bin/sh
         - -c
