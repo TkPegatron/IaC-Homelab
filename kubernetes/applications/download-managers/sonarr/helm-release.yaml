@@ -40,3 +40,14 @@ spec:
             server: 10.10.0.1
             path: >-
               /mnt/media/Videos/TVSeries
+    initContianers:
+      waitForGatewayMutator:
+        image: k8s.gcr.io/busybox
+        args:
+        - /bin/sh
+        - -c
+        - >
+          set -x;
+          while [ $(curl -sk "https://vpn-gateway-pod-gateway-webhook.network-components.svc.cluster.local:8080/wh/health") != '{"ok":true}' ]; do
+            sleep 15;
+          done
