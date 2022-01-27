@@ -43,7 +43,7 @@ spec:
             path: >-
               /mnt/media/Videos/TVSeries
     initContainers:
-      waitForGatewayMutator:
+      wait-for-gateway-mutator:
         image: k8s.gcr.io/busybox
         args:
         - /bin/sh

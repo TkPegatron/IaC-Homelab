@@ -34,7 +34,7 @@ spec:
                     server: 10.10.0.1
                     path: /mnt/media/Downloads/Torrent
     initContainers:
-      waitForGatewayMutator:
+      wait-for-gateway-mutator:
         image: k8s.gcr.io/busybox
         args:
         - /bin/sh
