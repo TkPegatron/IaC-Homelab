@@ -27,9 +27,12 @@ spec:
         downloads:
             enabled: true
             type: custom
-            mountPath: /downloads
+            mountPath: /downloads/
             storageClass: nfs
             volumeSpec:
                 nfs:
                     server: 10.10.0.1
                     path: /mnt/media/Downloads/Torrent
+    addons:
+      netshoot:
+        enabled: true
