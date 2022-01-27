@@ -33,7 +33,7 @@ spec:
                 nfs:
                     server: 10.10.0.1
                     path: /mnt/media/Downloads/Torrent
-    initContianers:
+    initContainers:
       waitForGatewayMutator:
         image: k8s.gcr.io/busybox
         args:

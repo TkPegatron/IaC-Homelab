@@ -42,7 +42,7 @@ spec:
             server: 10.10.0.1
             path: >-
               /mnt/media/Videos/TVSeries
-    initContianers:
+    initContainers:
       waitForGatewayMutator:
         image: k8s.gcr.io/busybox
         args:
