@@ -19,17 +19,17 @@ spec:
   values:
     service:
         listen:
-            type: ClusterIP
-            #type: LoadBalancer
-            #loadBalancerIP: "172.21.0.2"
-            #annotations:
-            #    metallb.universe.tf/allow-shared-ip: syncthing
+            #type: ClusterIP
+            type: LoadBalancer
+            loadBalancerIP: "172.21.0.1"
+            annotations:
+                metallb.universe.tf/allow-shared-ip: syncthing
         discovery:
-            type: ClusterIP
-            #type: LoadBalancer
-            #loadBalancerIP: "172.21.0.2"
-            #annotations:
-            #    metallb.universe.tf/allow-shared-ip: syncthing
+            #type: ClusterIP
+            type: LoadBalancer
+            loadBalancerIP: "172.21.0.1"
+            annotations:
+                metallb.universe.tf/allow-shared-ip: syncthing
     persistence:
         data:
             enabled: true
