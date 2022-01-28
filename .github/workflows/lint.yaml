@@ -32,7 +32,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'workflow_dispatch' }}
           DEFAULT_BRANCH: "${{ env.DEFAULT_BRANCH }}"
           GITHUB_TOKEN: "${{ steps.generate-token.outputs.token }}"
-          ANSIBLE_CONFIG_FILE: .ansible-lint
-          MARKDOWN_CONFIG_FILE: .markdownlint.yaml
-          YAML_CONFIG_FILE: .yamllint.yaml
+          ANSIBLE_CONFIG_FILE: ansible-lint.yaml
+          MARKDOWN_CONFIG_FILE: markdownlint.yaml
+          YAML_CONFIG_FILE: yamllint.yaml
           KUBERNETES_KUBEVAL_OPTIONS: --ignore-missing-schemas
