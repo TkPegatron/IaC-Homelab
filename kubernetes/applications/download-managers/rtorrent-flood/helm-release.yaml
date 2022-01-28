@@ -20,6 +20,14 @@ spec:
     hostname: torrent # needed for an static IP
     podAnnotations:
       setGateway: "true"
+    service:
+      main:
+        type: LoadBalancer
+        loadBalancerIP: "172.21.0.2"
+        ports:
+          http:
+            port: 80
+            targetPort: 3000
     persistence:
         config:
             enabled: true
@@ -27,7 +35,7 @@ spec:
         downloads:
             enabled: true
             type: custom
-            mountPath: /downloads/
+            mountPath: /downloads/download
             storageClass: nfs
             volumeSpec:
                 nfs:
