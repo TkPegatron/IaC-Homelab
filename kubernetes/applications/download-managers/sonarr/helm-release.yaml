@@ -28,6 +28,8 @@ spec:
         mountPath: /downloads
         storageClass: nfs
         accessMode: ReadWriteMany
+        capacity:
+          storage: 1Gi
         volumeSpec:
             nfs:
                 server: 10.10.0.1
@@ -36,6 +38,8 @@ spec:
         enabled: true
         type: custom
         accessMode: ReadWriteMany
+        capacity:
+          storage: 1Gi
         mountPath: /media/TVSeries
         volumeSpec:
           nfs:
