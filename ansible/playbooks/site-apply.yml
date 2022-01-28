@@ -9,7 +9,8 @@
   become: true
   roles:
     #- sshd_mfa
-    - bird_bgp
+    - bird
+    #- cloudalchemy.prometheus
 
 - name: "Configure on-site hypervisors and deploy VM's"
   hosts: kvm_hypervisors
@@ -17,7 +18,8 @@
   roles:
     #- kvm-libvirt
     #- terraform
-    - bird_bgp
+    - bird
+    #- cloudalchemy.prometheus
 
 #- name: "Deploy k3s environment across on-site hypervisors"
 #  ansible.builtin.import_playbook: kube-install.yml

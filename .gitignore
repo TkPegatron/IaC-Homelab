@@ -5,3 +5,5 @@ kubernetes/.old
 *.decrypted.yaml
 configuration/***
 docs/***
+bin/
+.envrc_secret

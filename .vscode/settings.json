@@ -3,12 +3,26 @@
     "discord.enabled": true,
     "files.associations": {
         "**/ansible/**/*.yml": "ansible",
+        "**/ansible/**/*.sops.yml": "yaml",
         "**/ansible/**/inventory/**/*.yml": "yaml",
+        "**/kubernetes/**/*.yaml": "yaml",
         "**/terraform/**/*.tf": "terraform"
     },
     "yaml.schemas": {
-        "Kubernetes": "cluster/*.yaml"
+        "Kubernetes": "kubernetes/***.yaml",
     },
+    "editor.fontLigatures": true,
     "editor.bracketPairColorization.enabled": true,
-    "editor.guides.bracketPairs":"active"
+    "editor.guides.bracketPairs":"active",
+    "editor.hover.delay": 1500,
+    "cSpell.words": [
+        "chdir",
+        "Cillium",
+        "containerd",
+        "ipam",
+        "kube",
+        "kubeconfig",
+        "Kubernetes",
+        "loadbalancer"
+    ],
 }

@@ -65,7 +65,7 @@ template bgp internal_bgp {
       if net = ::0/0 then reject;
       
       # if the NEXT_HOP address is in the same subnet of the sending router, use NEXT_HOP as is. 
-      if bgp_next_hop.mask(25) = from.mask(25) then {
+      if bgp_next_hop = from then {
         gw = bgp_next_hop;
         accept;
       }
@@ -76,9 +76,6 @@ template bgp internal_bgp {
     };
   };
 };
-
-
-
 
 {#
 TODO: Add support for IPv6

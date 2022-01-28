@@ -1,0 +1,6 @@
+---
+- name: "Install prerequisite packages"
+  ansible.builtin.dnf:
+    name: bird
+    state: "{{ bgp_state|default('absent') }}"
+  when: ansible_os_family == "RedHat" and not ansible_pkg_mgr == "atomic_container"

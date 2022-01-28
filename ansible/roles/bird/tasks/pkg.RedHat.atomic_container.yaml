@@ -1,0 +1,12 @@
+---
+- name: "For rpm-ostree based distros"
+  community.general.rpm_ostree_pkg:
+    name: bird
+    state: "{{ bgp_state|default('absent') }}"
+  register: ostree_out
+  when: ansible_os_family == "RedHat" and ansible_pkg_mgr == "atomic_container"
+
+- name: "Apply pending changes to the live system"
+  ansible.builtin.command:
+    cmd: "rpm-ostree ex apply-live --allow-replacement"
+  when: ostree_out.changed
