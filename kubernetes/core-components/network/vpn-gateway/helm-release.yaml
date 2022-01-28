@@ -22,7 +22,7 @@ spec:
       tag: v1.4.0
 
     routed_namespaces:
-      - downloads-vpn
+      - vpn-redirect
 
     publicPorts:
       - hostname: torrent # hostname assigned to the pod

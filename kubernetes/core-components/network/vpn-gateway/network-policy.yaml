@@ -2,8 +2,8 @@
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  name: downloads-vpn-policy
-  namespace: downloads-vpn
+  name: vpn-redirect-policy
+  namespace: vpn-redirect
 spec:
   podSelector: {}
   ingress:

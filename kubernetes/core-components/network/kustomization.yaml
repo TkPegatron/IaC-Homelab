@@ -5,5 +5,5 @@ resources:
   - namespace.yaml
 #  - metallb
   - ingress-nginx
-#  - vpn-gateway
+  - vpn-gateway
   - cert-manager
