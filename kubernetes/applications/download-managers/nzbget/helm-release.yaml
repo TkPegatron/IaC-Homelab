@@ -22,7 +22,7 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         hosts:
-            - host: &host "nzbget.${SECRET_PUBLIC_DOMAIN}"
+            - host: &host "nzbget.${SECRET_PRIVATE_DOMAIN}"
               paths:
                 - path: /
                   pathType: Prefix
