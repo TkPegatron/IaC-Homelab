@@ -17,9 +17,6 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
-#    hostname: torrent # needed for an static IP
-#    podAnnotations:
-#      setGateway: "true"
     service:
       main:
         type: LoadBalancer
@@ -41,17 +38,3 @@ spec:
                 nfs:
                     server: 10.10.0.1
                     path: /mnt/media/Downloads/NZB-Usenet
-#    initContainers:
-#      wait-for-gateway-mutator:
-#        image: curlimages/curl
-#        args:
-#        - /bin/sh
-#        - -c
-#        - >
-#          set -x;
-#          while [ $(curl -sk "https://vpn-gateway-pod-gateway-webhook.network-components.svc.cluster.local:8080/wh/health") != '{"ok":true}' ]; do
-#            sleep 15;
-#          done
-#    addons:
-#      netshoot:
-#        enabled: true
