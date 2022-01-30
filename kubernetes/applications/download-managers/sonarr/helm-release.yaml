@@ -36,6 +36,7 @@ spec:
     persistence:
       config:
         enabled: true
+        storageClass: nfs-client
       downloads:
         enabled: true
         type: custom
@@ -47,12 +48,13 @@ spec:
             nfs:
                 server: 10.10.0.1
                 path: /mnt/media/Downloads
-      tvseries:
+      media:
         enabled: true
         type: custom
+        mountPath: /media/TVSeries
+        storageClass: nfs
         accessMode: ReadWriteMany
         size: 1Gi
-        mountPath: /media/TVSeries
         volumeSpec:
           nfs:
             server: 10.10.0.1
