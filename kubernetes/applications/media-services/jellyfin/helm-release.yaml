@@ -17,10 +17,27 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: "jellyfish"
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            proxy_set_header Accept-Encoding "";
+            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/jellyfin/nord.css"></head>';
+            sub_filter_once on;
+        hosts:
+          - host: &host "jellyfin.${SECRET_PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
     service:
       main:
-        type: LoadBalancer
-        loadBalancerIP: "172.21.0.3"
         ports:
           http:
             port: 8096
@@ -28,7 +45,7 @@ spec:
       config:
         enabled: true
         storageClass: nfs-client
-      tvseries:
+      series:
         enabled: true
         type: custom
         mountPath: /media/TVSeries
@@ -46,3 +63,12 @@ spec:
             server: 10.10.0.1
             path: >-
               /mnt/media/Videos/Movies
+      youtube:
+        enabled: true
+        type: custom
+        mountPath: /media/Youtube
+        volumeSpec:
+          nfs:
+            server: 10.10.0.1
+            path: >-
+              /mnt/media/Videos/Youtube
