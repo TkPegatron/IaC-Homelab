@@ -35,15 +35,15 @@ spec:
           - hosts:
               - *host
     persistence:
-        config:
-            enabled: true
-            storageClass: nfs-client
-        downloads:
-            enabled: true
-            type: custom
-            mountPath: /downloads
-            storageClass: nfs
-            volumeSpec:
-                nfs:
-                    server: 10.10.0.1
-                    path: /mnt/media/Downloads/NZB-Usenet
+      config:
+        enabled: true
+        storageClass: nfs-client
+      downloads:
+        enabled: true
+        type: custom
+        mountPath: /downloads
+        storageClass: nfs
+        volumeSpec:
+          nfs:
+            server: 10.10.0.1
+            path: /mnt/media/Downloads/NZB-Usenet
