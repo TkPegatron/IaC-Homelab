@@ -1,0 +1,15 @@
+# -- { BPG Peering with BIRD } -- #
+bgp_state: present
+ibgp_peers:
+  - name: rpi-edge-fw
+    ip4_cidr_address: "172.22.0.1/25"
+    rr_client: true
+  - name: kvm-xenia
+    ip4_cidr_address: "172.22.0.3/25"
+
+# -- { Prometheus Node exporter } -- #
+prometheus_version: latest
+prometheus_targets:
+  node:
+  - targets:
+    - localhost:9100

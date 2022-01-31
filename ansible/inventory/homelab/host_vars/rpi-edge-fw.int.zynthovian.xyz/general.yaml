@@ -1,0 +1,15 @@
+# Ansible override vars
+ansible_host: 172.22.0.1
+
+# Role Options
+ssh_mfa_bypass_trusted: true
+ssh_mfa_state: present
+
+
+# -- { BPG Peering with BIRD } -- #
+bgp_state: present
+ibgp_peers:
+  - name: kvm-xenia
+    ip4_cidr_address: "172.22.0.3/25"
+  - name: kvm-legion
+    ip4_cidr_address: "172.22.0.4/25"

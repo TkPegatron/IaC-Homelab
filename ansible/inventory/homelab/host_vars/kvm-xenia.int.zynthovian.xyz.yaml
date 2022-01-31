@@ -1,0 +1,36 @@
+# -- { Terraform provisioning } -- #
+virtual_machine:
+  - name: "kubernetes"
+    prefix: '172.22.3.0/24'
+    vm:
+      - name: 'x86-server-a.{{ domain_private }}'
+        ip: '172.22.3.10'
+      - name: 'x86-worker-a.{{ domain_private }}'
+        ip: '172.22.3.15'
+      - name: 'x86-worker-b.{{ domain_private }}'
+        ip: '172.22.3.16'
+
+# -- { BPG Peering with BIRD } -- #
+bgp_state: present
+ibgp_peers:
+  - name: rpi-edge-fw
+    ip4_cidr_address: "172.22.0.1/25"
+    rr_client: true
+  - name: kvm-legion
+    ip4_cidr_address: "172.22.0.4/25"
+  - name: k3s-server-a
+    ip4_cidr_address: "10.10.0.5/24"
+    bfd: false # BFD seems to misbehave inside virtual networks
+  - name: k3s-worker-0
+    ip4_cidr_address: "10.10.0.10/24"
+    bfd: false # BFD seems to misbehave inside virtual networks
+  - name: k3s-worker-1
+    ip4_cidr_address: "10.10.0.11/24"
+    bfd: false # BFD seems to misbehave inside virtual networks
+
+# -- { Prometheus Node exporter } -- #
+prometheus_version: latest
+prometheus_targets:
+  node:
+  - targets:
+    - localhost:9100
