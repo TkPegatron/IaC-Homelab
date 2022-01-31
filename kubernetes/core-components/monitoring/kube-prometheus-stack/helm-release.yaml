@@ -117,9 +117,9 @@ spec:
               - node
             targetLabel: instance
     kubeApiServer:
-      enabled: true
+      enabled: false
     kubeControllerManager:
-      enabled: true
+      enabled: false
       endpoints:
         - 10.10.0.5
         - 10.10.0.10
@@ -133,7 +133,7 @@ spec:
         https: true
         insecureSkipVerify: true
     kubeScheduler:
-      enabled: true
+      enabled: false
       endpoints:
         - 10.10.0.5
         - 10.10.0.10
@@ -147,7 +147,7 @@ spec:
         https: true
         insecureSkipVerify: true
     kubeProxy:
-      enabled: true
+      enabled: false
       endpoints:
         - 10.10.0.5
         - 10.10.0.10
@@ -157,7 +157,7 @@ spec:
         port: null
         targetPort: null
     kubeEtcd:
-      enabled: true
+      enabled: false
       endpoints:
         - 10.10.0.5
         - 10.10.0.10
