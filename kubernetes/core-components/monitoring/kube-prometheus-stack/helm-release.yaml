@@ -33,7 +33,7 @@ spec:
           - name: "null"
           - name: "discord"
             slack_configs:
-              - channel: "#homelabs-notification"
+              - channel: "#homelab-notification"
                 icon_url: https://avatars3.githubusercontent.com/u/3380462
                 username: "Prometheus"
                 send_resolved: true
@@ -124,18 +124,30 @@ spec:
         - 10.10.0.5
         - 10.10.0.10
         - 10.10.0.11
+      service:
+        enabled: true
+        port: null
+        targetPort: null
     kubeScheduler:
       enabled: true
       endpoints:
         - 10.10.0.5
         - 10.10.0.10
         - 10.10.0.11
+      service:
+        enabled: true
+        port: null
+        targetPort: null
     kubeProxy:
       enabled: true
       endpoints:
         - 10.10.0.5
         - 10.10.0.10
         - 10.10.0.11
+      service:
+        enabled: true
+        port: null
+        targetPort: null
     kubeEtcd:
       enabled: true
       endpoints:
