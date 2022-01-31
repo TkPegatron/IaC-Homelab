@@ -4,4 +4,4 @@ kind: Kustomization
 resources:
   - network
   - storage
-#  - monitoring
+  - monitoring
