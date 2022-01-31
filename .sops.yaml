@@ -1,0 +1,20 @@
+---
+creation_rules:
+
+  - path_regex: ansible/.*\.sops\.ya?ml
+    unencrypted_regex: "^(kind)$"
+    gpg: >-
+      0B7275A133DEA971175DF634F14FAC73727DD99B,
+      90AB4A0FF0F17A5CAC2AEABAA538A7E3EC07999A
+
+  - path_regex: kubernetes/.*\.ya?ml
+    encrypted_regex: "^(data|stringData)$"
+    gpg: >-
+      0B7275A133DEA971175DF634F14FAC73727DD99B,
+      90AB4A0FF0F17A5CAC2AEABAA538A7E3EC07999A
+
+  - path_regex: terraform/.*\.sops\.ya?ml
+    unencrypted_regex: "^(kind)$"
+    gpg: >-
+      0B7275A133DEA971175DF634F14FAC73727DD99B,
+      90AB4A0FF0F17A5CAC2AEABAA538A7E3EC07999A

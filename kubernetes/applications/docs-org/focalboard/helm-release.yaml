@@ -22,6 +22,8 @@ spec:
       data:
         enabled: true
         storageClass: nfs-client
+        accessMode: ReadWriteMany
+        size: 1Gi
     ingress:
       main:
         enabled: true
