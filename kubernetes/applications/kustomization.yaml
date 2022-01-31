@@ -5,4 +5,5 @@ resources:
   - syncthing-primary
   - download-managers
   - media-services
+  - docs-org
   - pihole
