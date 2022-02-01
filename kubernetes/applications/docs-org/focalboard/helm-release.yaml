@@ -21,12 +21,12 @@ spec:
     persistence:
       data:
         enabled: true
-        storageClass: nfs-client
+        storageClass: "nfs-client"
         accessMode: ReadWriteMany
         size: 1Gi
     ingress:
       main:
-        enabled: true
+        enabled: false
         ingressClassName: "nginx"
         hosts:
           - host: &host "focalboard.${SECRET_PUBLIC_DOMAIN}"

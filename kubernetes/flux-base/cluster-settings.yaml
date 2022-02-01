@@ -1,0 +1,15 @@
+# yamllint disable
+apiVersion: v1
+kind: Secret
+metadata:
+    name: cluster-settings
+    namespace: flux-system
+stringData:
+    TIMEZONE: "america/detroit"
+    TIMEZONESEC: 'UTC'
+    NETWORK_LAN_MGMT: "172.22.0.0/25"
+    NETWORK_LAN_WVPN: "172.22.0.128/25"
+    NETWORK_LAN_BYOD: "172.22.1.0/24"
+    NETWORK_LAN_SUMM: "172.22.0.0/23"
+    NETWORK_KUBE_CLUSTER: "10.60.0.0/16"
+    NETWORK_KUBE_SERVICE: "10.61.0.0/16"
