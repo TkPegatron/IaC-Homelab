@@ -8,6 +8,7 @@ spec:
   interval: 10m0s
   dependsOn:
     - name: custom-resources
+    - name: core-components
     - name: namespaces
   path: ./kubernetes/applications
   prune: true
