@@ -8,9 +8,10 @@
   hosts: rpi-edge-fw.int.zynthovian.xyz
   become: true
   roles:
-    #- sshd_mfa
+#    - sshd_mfa
     - bird
-    #- cloudalchemy.prometheus
+#    - cloudalchemy.prometheus
+#    - patrickjahns.promtail
 
 - name: "Configure on-site hypervisors and deploy VM's"
   hosts: kvm_hypervisors
@@ -18,8 +19,9 @@
   roles:
     #- kvm-libvirt
     #- terraform
+    - nfs
     - bird
-    #- cloudalchemy.prometheus
+#    - cloudalchemy.prometheus
 
-#- name: "Deploy k3s environment across on-site hypervisors"
-#  ansible.builtin.import_playbook: kube-install.yml
+- name: "Deploy k3s environment on-site"
+  ansible.builtin.import_playbook: kube-deploy.yml

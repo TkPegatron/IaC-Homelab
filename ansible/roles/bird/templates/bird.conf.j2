@@ -44,7 +44,7 @@ protocol static dummystatic {
 
 
 template bgp internal_bgp {
-  password "{{ibgp_passwd}}";
+  password "{{ ibgp_passwd }}";
   startup hold time 0;
   graceful restart on;
   advertise hostname;
@@ -79,21 +79,23 @@ template bgp internal_bgp {
 
 {#
 TODO: Add support for IPv6
-TODO: Validation
   - Check hostname is underscored
 #}
 {% for peer in ibgp_peers %}
 protocol bgp {{ peer.name | replace('-','_') }} from internal_bgp {
-  local {{ (ansible_all_ipv4_addresses | ansible.netcommon.ipaddr(peer.ip4_cidr_address) | list)[0] }} as {{ibgp_asn}};
+  local {{ (ansible_all_ipv4_addresses | ansible.netcommon.ipaddr(network_facts.control_plane_prefix) | list)[0] }} as {{ibgp_asn}};
   neighbor {{ peer.ip4_cidr_address | ansible.netcommon.ipv4('address') }} as {{ibgp_asn}};
 {% if peer.password is defined %}
-  "{{peer.password}}";
+  "{{ peer.password }}";
 {% endif %}
 {% if not (peer.bfd | default(true)) %}
   bfd off;
 {% endif %}
 {% if (peer.rr_client | default(false)) %}
   rr client;
+{% endif %}
+{% if (peer.multi_hop | default(false)) %}
+  multihop;
 {% endif %}
 };
 

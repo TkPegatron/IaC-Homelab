@@ -1,2 +1,3 @@
+# -- { K3S Settings } -- #
 k3s_become: true
 k3s_registration_address: '10.10.0.5'
