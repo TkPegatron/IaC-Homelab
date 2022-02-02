@@ -2,6 +2,23 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
+  name: my-selfsigned-ca
+  namespace: sandbox
+spec:
+  isCA: true
+  commonName: my-selfsigned-ca
+  secretName: root-secret
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
   name: "${SECRET_PUBLIC_DOMAIN/./-}"
   namespace: network-components
 spec:
