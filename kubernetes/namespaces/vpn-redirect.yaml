@@ -1,7 +1,0 @@
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: vpn-redirect
-  labels:
-      routed-gateway: "true"
