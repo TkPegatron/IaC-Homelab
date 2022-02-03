@@ -1,0 +1,51 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: authentik
+  namespace: applications
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://charts.goauthentik.io/
+      chart: authentik
+      version: 5.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: goauthentik-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    ingress:
+      enabled: true
+      ingressClassName: "nginx"
+      hosts:
+        - host: &host "authentik.${SECRET_PUBLIC_DOMAIN}"
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - *host
+
+    authentik:
+      # -- Log level for server and worker
+      log_level: info
+      # -- Secret key used for cookie singing and unique user IDs,
+      # don't change this after the first install
+      secret_key: ""
+      # -- Mode for the avatars. Defaults to gravatar. Possible options 'gravatar' and 'none'
+      avatars: gravatar
+
+    postgresql:
+      # -- enable the bundled bitnami postgresql chart
+      enabled: true
+      persistence:
+        enabled: true
+        storageClass: nfs-client
+        accessModes:
+          - ReadWriteOnce
+    redis:
+      # -- enable the bundled bitnami redis chart
+      enabled: true
