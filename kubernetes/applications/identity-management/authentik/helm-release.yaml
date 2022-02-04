@@ -46,9 +46,15 @@ spec:
           storageClass: nfs-client
           accessModes:
             - ReadWriteOnce
+      primary:
+        nodeSelector: 
+          kubernetes.io/arch: amd64
     redis:
       # -- enable the bundled bitnami redis chart
       enabled: true
       architecture: standalone
       global:
         storageClass: nfs-client
+      master:
+        nodeSelector: 
+          kubernetes.io/arch: amd64
