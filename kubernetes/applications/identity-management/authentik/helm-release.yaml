@@ -34,9 +34,12 @@ spec:
       log_level: info
       # -- Secret key used for cookie singing and unique user IDs,
       # don't change this after the first install
-      secret_key: ""
-      # -- Mode for the avatars. Defaults to gravatar. Possible options 'gravatar' and 'none'
+      secret_key: "${SECRET_AUTHENTIK_COOKIE_KEY}"
+      # -- Mode for the avatars. Defaults to gravatar.
       avatars: gravatar
+      
+      postgresql:
+        password: "${SECRET_AUTHENTIK_DB_PASSWORD}"
 
     postgresql:
       # -- enable the bundled bitnami postgresql chart
@@ -53,6 +56,7 @@ spec:
       # -- enable the bundled bitnami redis chart
       enabled: true
       architecture: standalone
+      postgresqlPassword: "${SECRET_AUTHENTIK_DB_PASSWORD}"
       global:
         storageClass: nfs-client
       master:
