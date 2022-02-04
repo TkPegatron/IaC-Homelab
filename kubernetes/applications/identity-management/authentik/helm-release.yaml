@@ -44,21 +44,21 @@ spec:
     postgresql:
       # -- enable the bundled bitnami postgresql chart
       enabled: true
+      postgresqlPassword: "${SECRET_AUTHENTIK_DB_PASSWORD}"
+      image:
+        repository: postgres
+        tag: 14.1
       persistence:
           enabled: true
           storageClass: nfs-client
           accessModes:
             - ReadWriteOnce
-      primary:
-        nodeSelector: 
-          kubernetes.io/arch: amd64
     redis:
       # -- enable the bundled bitnami redis chart
       enabled: true
       architecture: standalone
-      postgresqlPassword: "${SECRET_AUTHENTIK_DB_PASSWORD}"
       global:
         storageClass: nfs-client
-      master:
-        nodeSelector: 
-          kubernetes.io/arch: amd64
+      image: 
+        repository: redis
+        tag: 6.2.6
