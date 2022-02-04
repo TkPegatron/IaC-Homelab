@@ -49,8 +49,4 @@ spec:
     redis:
       # -- enable the bundled bitnami redis chart
       enabled: true
-      persistence:
-        enabled: true
-        storageClass: nfs-client
-        accessModes:
-          - ReadWriteOnce
+      storageClass: nfs-client
