@@ -29,6 +29,9 @@ spec:
         - hosts:
             - *host
 
+    nodeSelector:
+      kubernetes.io/arch: amd64
+
     authentik:
       # -- Log level for server and worker
       log_level: info
