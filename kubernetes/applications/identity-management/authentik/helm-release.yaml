@@ -46,13 +46,9 @@ spec:
           storageClass: nfs-client
           accessModes:
             - ReadWriteOnce
-      image:
-        repository: postgres
     redis:
       # -- enable the bundled bitnami redis chart
       enabled: true
       architecture: standalone
-      image: 
-        repository: library/redis
       global:
         storageClass: nfs-client
