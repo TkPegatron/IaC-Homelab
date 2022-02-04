@@ -12,3 +12,4 @@ resources:
   - prometheus-community-charts.yaml
   - hajimari-charts.yaml
   - goauthentik-charts.yaml
+  - longhorn-charts.yaml
