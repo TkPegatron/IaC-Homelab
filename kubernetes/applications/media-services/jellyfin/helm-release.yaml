@@ -24,7 +24,6 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "jellyfish"
-          cert-manager.io/issuer: letsencrypt-production
           nginx.ingress.kubernetes.io/configuration-snippet: |
             proxy_set_header Accept-Encoding "";
             sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/jellyfin/nord.css"></head>';

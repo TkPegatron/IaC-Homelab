@@ -51,5 +51,23 @@
       ],
       "ignoreDeprecated": true
     },
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "commitMessageExtra": "to {{newVersion}}"
+    },
+    {
+      "matchDatasources": [
+        "github-tags",
+        "docker"
+      ],
+      "matchPackagePatterns": [
+        "rancher/system-upgrade-controller"
+      ],
+      "groupName": "system-upgrade-controller-suite",
+      "additionalBranchPrefix": "",
+      "separateMinorPatch": true
+    },
   ],
 }
