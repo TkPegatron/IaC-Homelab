@@ -207,5 +207,6 @@ spec:
             honor_timestamps: true
             static_configs:
               - targets:
-                  - "rpi-edge-fw:9100"
+                  - "172.22.0.1:9100"
                   - "kvm-xenia:9100"
+                  - "kvm-legion:9100"
