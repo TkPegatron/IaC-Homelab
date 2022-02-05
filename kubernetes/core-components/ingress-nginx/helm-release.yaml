@@ -55,8 +55,8 @@ spec:
       #      any: true
       #  prometheusRule:
       #    enabled: false
-      #extraArgs:
-      #  default-ssl-certificate: "networking/${SECRET_PUBLIC_DOMAIN/./-}-tls"
+      extraArgs:
+        default-ssl-certificate: "${SECRET_PUBLIC_DOMAIN/./-}-tls"
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
