@@ -24,8 +24,6 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: "transfer-down"
-          nginx.ingress.kubernetes.io/whitelist-source-range: |
-            "${NETWORK_LAN_SUMM}"
           nginx.ingress.kubernetes.io/configuration-snippet: |
             proxy_set_header Accept-Encoding "";
             sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/nzbget/nord.css"></head>';
