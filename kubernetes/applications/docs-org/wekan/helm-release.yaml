@@ -1,0 +1,42 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: wekan
+  namespace: applications
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://wekan.github.io/charts
+      chart: wekan
+      version: 1.1.1
+      sourceRef:
+        kind: HelmRepository
+        name: wekan-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    mongodb-replicaset:
+      enabled: true
+      replicas: 1
+      replicaSetName: rs0
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128M
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - host: &host "wekan.${SECRET_PUBLIC_DOMAIN}"
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - *host
