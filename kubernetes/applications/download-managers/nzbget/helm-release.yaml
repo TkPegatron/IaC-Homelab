@@ -49,7 +49,6 @@ spec:
       downloads:
         enabled: true
         type: custom
-        mountPath: /config/downloads
         storageClass: nfs
         volumeSpec:
           nfs:
