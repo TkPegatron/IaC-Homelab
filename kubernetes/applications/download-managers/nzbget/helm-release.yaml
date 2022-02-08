@@ -39,8 +39,7 @@ spec:
     persistence:
       config:
         enabled: true
-        accessMode: ReadWriteOnce
-        size: 3Gi
+        size: 5Gi
       downloads:
         enabled: true
         type: custom
