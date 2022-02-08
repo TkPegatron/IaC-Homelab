@@ -2,11 +2,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: custom-resources
+  name: helm-charts
   namespace: flux-system
 spec:
   interval: 10m0s
-  path: ./kubernetes/custom-resources
+  path: ./kubernetes/cluster/charts
   prune: false
   sourceRef:
     kind: GitRepository

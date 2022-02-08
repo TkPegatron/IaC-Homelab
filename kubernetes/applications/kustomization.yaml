@@ -2,10 +2,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - identity-management
-  - syncthing-primary
-  - download-managers
-  - media-services
-  - monitoring
-  - docs-org
-  - pihole
+  - hajimari
+  - svc.media
+  - svc.documents
