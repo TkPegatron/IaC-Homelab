@@ -44,12 +44,12 @@ spec:
         enabled: true
         size: 10Gi
         storageClass: longhorn
-      #downloads:
-      #  enabled: true
-      #  type: custom
-      #  mountPath: /downloads
-      #  storageClass: nfs
-      #  volumeSpec:
-      #    nfs:
-      #      server: 10.10.0.1
-      #      path: /mnt/media/Downloads/NZB-Usenet
+      downloads:
+        enabled: true
+        type: custom
+        mountPath: /config/downloads
+        storageClass: nfs
+        volumeSpec:
+          nfs:
+            server: 10.10.0.1
+            path: /mnt/media/Downloads/NZB-Usenet
