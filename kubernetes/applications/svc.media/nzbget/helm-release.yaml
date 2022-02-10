@@ -16,10 +16,10 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
-    #podSecurityContext:
-    #  fsGroup: 1001
-    #securityContext:
-    #  runAsUser: 1001
+    podSecurityContext:
+      fsGroup: 1001
+    securityContext:
+      runAsUser: 1001
     ingress:
       main:
         enabled: true
