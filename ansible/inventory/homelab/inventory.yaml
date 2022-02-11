@@ -2,11 +2,11 @@
 all:
   hosts:
     rpi-edge-fw.int.zynthovian.xyz:   
-    x86-server-a.int.zynthovian.xyz:
+    amd64-server-aa.int.zynthovian.xyz:
       ansible_host: 10.10.0.5
-    x86-worker-0.int.zynthovian.xyz:
+    amd64-worker-00.int.zynthovian.xyz:
       ansible_host: 10.10.0.10
-    arm64-worker-0.int.zynthovian.xyz:
+    arm64-worker-00.int.zynthovian.xyz:
       ansible_host: 172.22.0.59
     kvm-xenia.int.zynthovian.xyz:
     kvm-legion.int.zynthovian.xyz:
@@ -15,11 +15,11 @@ all:
       children:
         k3s-worker-nodes:
           hosts:
-            x86-worker-0.int.zynthovian.xyz:
-            arm64-worker-0.int.zynthovian.xyz:
+            amd64-worker-00.int.zynthovian.xyz:
+            arm64-worker-00.int.zynthovian.xyz:
         k3s-master-nodes:
           hosts:
-            x86-server-a.int.zynthovian.xyz:
+            amd64-server-aa.int.zynthovian.xyz:
     kvm_hypervisors:
       hosts:
         kvm-xenia.int.zynthovian.xyz:

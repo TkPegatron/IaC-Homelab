@@ -15,6 +15,14 @@ ibgp_peers:
     ip4_cidr_address: "172.22.0.1/25"
   - name: kvm-legion
     ip4_cidr_address: "172.22.0.4/25"
+  - name: amd64-server-aa # This host is on kvm-xenia
+    ip4_cidr_address: "10.10.0.5/24"
+    bfd: false
+  - name: amd64-worker-00 # This host is on kvm-xenia
+    ip4_cidr_address: "10.10.0.10/24"
+    bfd: false
+  - name: arm64-worker-00
+    ip4_cidr_address: "172.22.0.59/25"
 
 # -- { Prometheus Node exporter } -- #
 prometheus_version: latest
