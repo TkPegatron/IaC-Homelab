@@ -6,6 +6,7 @@ resources:
   - hajimari
   - svc.media
   - svc.documents
+  - svc.dashboards
   - kube-prometheus-stack
   - ingress-nginx
   - authentik
