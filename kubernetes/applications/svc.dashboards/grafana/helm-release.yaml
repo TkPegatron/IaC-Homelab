@@ -19,10 +19,6 @@ spec:
     createNamespace: true
   values:
     replicas: 1
-    podSecurityContext:
-      fsGroup: 1001
-    securityContext:
-      runAsUser: 1001
     env:
       GF_EXPLORE_ENABLED: true
       GF_PANELS_DISABLE_SANITIZE_HTML: true
@@ -123,4 +119,4 @@ spec:
       create: true
       autoMount: true
     persistence:
-      enabled: true
+      enabled: false
