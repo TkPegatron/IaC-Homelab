@@ -6,7 +6,7 @@ resources:
   - hajimari
   - svc.media
   - svc.documents
-  - svc.dashboards
+  - svc.monitoring
   - svc.downloads
   - ingress-nginx
   - authentik
