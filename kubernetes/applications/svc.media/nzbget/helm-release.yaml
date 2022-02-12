@@ -44,6 +44,14 @@ spec:
         enabled: true
         size: 10Gi
         storageClass: longhorn
+      nzbget-config:
+        enabled: true
+        type: custom
+        mountPath: /config/nzbget.conf
+        subPath: nzbget.conf
+        volumeSpec:
+          configMap:
+            name: nzbget-config-file
       downloads:
         enabled: true
         type: custom
