@@ -27,6 +27,10 @@ spec:
       namespaceSelector:
         matchNames:
           - applications
+          - downloads
+          - documents
+          - monitoring
+          - media
       groups:
         - name: Cloud
           links:
