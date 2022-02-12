@@ -22,7 +22,6 @@ spec:
         - name: TZ
           value: America/New_York
       service:
-        loadBalancerIP: "172.21.0.0"
         externalIPs:
           - "172.21.0.0"
         externalTrafficPolicy: Local

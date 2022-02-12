@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
     name: nzbget-config-file
-    namespace: applications
+    namespace: downloads
     labels:
         app: nzbget
 data:

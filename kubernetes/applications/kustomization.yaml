@@ -7,6 +7,6 @@ resources:
   - svc.media
   - svc.documents
   - svc.dashboards
-  - kube-prometheus-stack
+  - svc.downloads
   - ingress-nginx
   - authentik

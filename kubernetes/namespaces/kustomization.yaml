@@ -4,3 +4,6 @@ resources:
   - applications.yaml
   - monitoring.yaml
   - longhorn-system.yaml
+  - media.yaml
+  - documents.yaml
+  - downloads.yaml

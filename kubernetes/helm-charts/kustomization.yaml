@@ -14,3 +14,4 @@ resources:
   - metallb-charts.yaml
   - grafana-charts.yaml
   - wekan-charts.yaml
+  - stakater-charts.yaml
