@@ -127,4 +127,4 @@ spec:
       create: true
       autoMount: true
     persistence:
-      enabled: false
+      enabled: true
