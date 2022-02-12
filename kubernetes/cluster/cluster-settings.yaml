@@ -5,7 +5,7 @@ metadata:
     name: cluster-settings
     namespace: flux-system
 stringData:
-    TIMEZONE: "america/detroit"
+    TIMEZONE: "America/Detroit"
     TIMEZONESEC: 'UTC'
     NETWORK_LAN_MGMT: "172.22.0.0/25"
     NETWORK_LAN_WVPN: "172.22.0.128/25"
