@@ -49,11 +49,6 @@ spec:
       requests:
         cpu: 100m
         memory: 128M
-    persistence:
-      data:
-        enabled: true
-        accessMode: ReadWriteOnce
-        size: 500M
     ingress:
       main:
         enabled: true
