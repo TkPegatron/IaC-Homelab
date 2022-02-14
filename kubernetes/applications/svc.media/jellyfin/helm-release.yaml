@@ -46,6 +46,7 @@ spec:
     persistence:
       config:
         enabled: true
+        size: 20Gi
       series:
         enabled: true
         type: custom
