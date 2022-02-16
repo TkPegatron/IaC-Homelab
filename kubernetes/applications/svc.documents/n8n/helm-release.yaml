@@ -17,8 +17,12 @@ spec:
       interval: 5m
   timeout: 30m
   values:
-    extraEnv:
-      TZ: "${TIMEZONE}"
+    config:
+      database:
+        type: sqlite
+      generic:
+        timezone: "${TIMEZONE}"
+      protocol: http
     persistence:
       enabled: true
       size: 4Gi
