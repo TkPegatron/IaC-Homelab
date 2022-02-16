@@ -15,6 +15,8 @@ spec:
         name: k8s-at-home-charts
         namespace: flux-system
       interval: 5m
+  install:
+    createNamespace: true
   timeout: 30m
   values:
 
@@ -66,10 +68,23 @@ spec:
         tls:
           - hosts:
               - *host
+
+    securityContext:
+      runAsUser: 1001
+      runAsGroup: 0
     
     # -- Configure persistence settings for the chart under this key.
     # @default -- See values.yaml
     persistence:
       data:
         enabled: true
-        mountPath: /data
+        accessMode: ReadWriteOnce
+        mountPath: "/data"
+        size: 4Gi
+
+    resources:
+      requests:
+        memory: 100Mi
+        cpu: 100m
+      limits:
+        memory: 500Mi
