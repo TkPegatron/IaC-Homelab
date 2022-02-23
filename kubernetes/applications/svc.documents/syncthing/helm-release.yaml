@@ -35,5 +35,5 @@ spec:
     persistence:
       data:
         enabled: true
-        mountPath: /var/syncthing
-        size: 20Gi
+        size: 30Gi
+        accessMode: ReadWriteOnce
