@@ -121,9 +121,7 @@ spec:
     kubeControllerManager:
       enabled: false
       endpoints:
-        - 10.10.0.5
-        - 10.10.0.10
-        - 10.10.0.11
+        ${PROMETHEUS_TARGET_ENDPOINTS}
       service:
         enabled: true
         port: 10257
@@ -135,9 +133,7 @@ spec:
     kubeScheduler:
       enabled: false
       endpoints:
-        - 10.10.0.5
-        - 10.10.0.10
-        - 10.10.0.11
+        ${PROMETHEUS_TARGET_ENDPOINTS}
       service:
         enabled: true
         port: 10259
@@ -149,9 +145,7 @@ spec:
     kubeProxy:
       enabled: false
       endpoints:
-        - 10.10.0.5
-        - 10.10.0.10
-        - 10.10.0.11
+        ${PROMETHEUS_TARGET_ENDPOINTS}
       service:
         enabled: true
         port: null
@@ -159,9 +153,7 @@ spec:
     kubeEtcd:
       enabled: false
       endpoints:
-        - 10.10.0.5
-        - 10.10.0.10
-        - 10.10.0.11
+        ${PROMETHEUS_TARGET_ENDPOINTS}
       service:
         enabled: true
         port: 2381
@@ -207,6 +199,4 @@ spec:
             honor_timestamps: true
             static_configs:
               - targets:
-                  - "172.22.0.1:9100"
-                  - "kvm-xenia:9100"
-                  - "kvm-legion:9100"
+                  ${PROMETHEUS_EXTERNAL_TARGETS}
