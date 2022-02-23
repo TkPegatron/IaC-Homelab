@@ -30,19 +30,6 @@ protocol kernel kernel_v6 {
   learn;
 };
 
-
-# The following configuration abuses igp table to accept routes having any NEXT_HOP address 
-#  then rewrites NEXT_HOP by an import filter. 
-# The import filter carefully does not rewrite NEXT_HOP address if the address is directly reachable.
-
-# A dummy IGP routing table with a default gateway to accept any `NEXT_HOP`.
-ipv4 table dummytab;
-protocol static dummystatic {
-    ipv4 { table dummytab; };
-    route 0.0.0.0/0 via "lo";
-}
-
-
 template bgp internal_bgp {
   password "{{ ibgp_passwd }}";
   startup hold time 0;
@@ -51,7 +38,6 @@ template bgp internal_bgp {
   setkey on;
   bfd on;
   ipv4 {
-    igp table dummytab;
     gateway recursive;
     export filter {
       # Reject inet default-routes
@@ -63,13 +49,6 @@ template bgp internal_bgp {
       # Reject inet default-routes
       if net = 0.0.0.0/0 then reject;
       if net = ::0/0 then reject;
-      
-      # if the NEXT_HOP address is in the same subnet of the sending router, use NEXT_HOP as is. 
-      if bgp_next_hop = from then {
-        gw = bgp_next_hop;
-        accept;
-      }
-      
       # otherwise, rewrite NEXT_HOP ("gw") to the address of the sending router ("from")
       gw = from;
       accept;

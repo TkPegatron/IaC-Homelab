@@ -22,6 +22,8 @@ ibgp_peers:
     multihop: true
   - name: arm64-worker-00
     ip4_cidr_address: "172.22.0.59/25"
+  - name: amd64-server-b5915c
+    ip4_cidr_address: "172.22.0.10/25"
 
 # -- { Prometheus Node exporter } -- #
 prometheus_version: latest

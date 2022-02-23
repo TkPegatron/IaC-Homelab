@@ -13,15 +13,15 @@
 #    - cloudalchemy.prometheus
 #    - patrickjahns.promtail
 
-- name: "Configure on-site hypervisors and deploy VM's"
-  hosts: kvm_hypervisors
-  become: true
-  roles:
-    #- kvm-libvirt
-    #- terraform
-    - nfs
-    - bird
-#    - cloudalchemy.prometheus
+#- name: "Configure on-site hypervisors and deploy VM's"
+#  hosts: kvm_hypervisors
+#  become: true
+#  roles:
+#    #- kvm-libvirt
+#    #- terraform
+#    - nfs
+#    - bird
+##    - cloudalchemy.prometheus
 
-- name: "Deploy k3s environment on-site"
-  ansible.builtin.import_playbook: kube-deploy.yml
+#- name: "Deploy k3s environment on-site"
+#  ansible.builtin.import_playbook: kube-deploy.yml

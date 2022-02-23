@@ -3,7 +3,7 @@
 # ref: https://docs.cilium.io/en/stable/gettingstarted/kubeproxy-free/
 kubeProxyReplacement: strict
 
-k8sServiceHost: 10.10.0.5
+k8sServiceHost: 172.22.0.10
 k8sServicePort: 6443
 
 extraConfig:
@@ -36,6 +36,20 @@ enableIPv6Masquerade: true
 # destinations outside of the cluster.
 masquerade: true
 
+bpf:
+  # -- Enable native IP masquerade support in eBPF
+  masquerade: false
+
+  # -- Configure whether direct routing mode should route traffic via
+  # host stack (true) or directly and more efficiently out of BPF (false) if
+  # the kernel supports it. The latter has the implication that it will also
+  # bypass netfilter in the host namespace.
+  hostRouting: true
+
+  # -- Configure the eBPF-based TPROXY to reduce reliance on iptables rules
+  # for implementing Layer 7 policy.
+  tproxy: true
+
 # autoDirectNodeRoutes enables installation of PodCIDR routes between worker
 # nodes if worker nodes share a common L2 network segment.
 #autoDirectNodeRoutes: true
@@ -53,10 +67,19 @@ bgp:
 operator:
   # -- Roll out cilium-operator pods automatically when configmap is updated.
   rollOutPods: true
+  #replicas: 1
 
 hubble:
   # -- Enable Hubble (true by default).
-  enabled: false
+  enabled: true
+  
+  relay:
+    # -- Enable Hubble Relay (requires hubble.enabled=true)
+    enabled: true
+
+  ui:
+    # -- Whether to enable the Hubble UI.
+    enabled: true
 
 ipv6:
   # -- Enable IPv6 support.
@@ -64,3 +87,11 @@ ipv6:
 
 # -- Roll out cilium agent pods automatically when configmap is updated.
 rollOutCiliumPods: true
+
+# -- Configure the eBPF-based ip-masq-agent
+ipMasqAgent:
+  enabled: false
+
+# disableEnvoyVersionCheck removes the check for Envoy, which can be useful
+# on AArch64 as the images do not currently ship a version of Envoy.
+disableEnvoyVersionCheck: true

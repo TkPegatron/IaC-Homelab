@@ -6,9 +6,12 @@ metadata:
 data:
   config.yaml: |
     peers:
-    - peer-address: 172.22.0.1
+{% for router in ibgp_routers %}
+    - peer-address: {{ router }}
       peer-asn: {{ ibgp_asn }}
+      password: {{ ibgp_passwd }}
       my-asn: {{ ibgp_asn }}
+{% endfor %}
     address-pools:
     - name: default
       protocol: bgp
