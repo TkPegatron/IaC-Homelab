@@ -18,59 +18,22 @@ spec:
   timeout: 30m
   values:
     service:
-        listen:
-            #type: ClusterIP
-            type: LoadBalancer
-            loadBalancerIP: "172.21.0.1"
-            annotations:
-                metallb.universe.tf/allow-shared-ip: syncthing
-        discovery:
-            #type: ClusterIP
-            type: LoadBalancer
-            loadBalancerIP: "172.21.0.1"
-            annotations:
-                metallb.universe.tf/allow-shared-ip: syncthing
+      listen:
+        #type: ClusterIP
+        type: LoadBalancer
+        loadBalancerIP: "172.21.0.1"
+        annotations:
+          metallb.universe.tf/allow-shared-ip: syncthing
+      discovery:
+        #type: ClusterIP
+        type: LoadBalancer
+        loadBalancerIP: "172.21.0.1"
+        annotations:
+          metallb.universe.tf/allow-shared-ip: syncthing
     podAnnotations:
       configmap.reloader.stakater.com/reload: "syncthing-config-file"
     persistence:
-        data:
-            enabled: true
-            type: custom
-            mountPath: /var/syncthing
-            storageClass: nfs
-            volumeSpec:
-                nfs:
-                    server: 10.10.0.1
-                    path: >-
-                        /mnt/media/KubePVC/syncthing-data-pvc
-        documents:
-            enabled: true
-            type: custom
-            mountPath: /var/syncthing/Documents
-            storageClass: nfs
-            volumeSpec:
-                nfs:
-                    server: 10.10.0.1
-                    path: >-
-                        /mnt/media/Documents
-        coderepo:
-            enabled: true
-            type: custom
-            mountPath: /var/syncthing/CodeRepos
-            storageClass: nfs
-            volumeSpec:
-                nfs:
-                    server: 10.10.0.1
-                    path: >-
-                        /mnt/media/CodeRepos
-        books:
-            enabled: true
-            type: custom
-            mountPath: /var/syncthing/Books
-            storageClass: nfs
-            volumeSpec:
-                nfs:
-                    server: 10.10.0.1
-                    path: >-
-                        /mnt/media/Books
-
+      data:
+        enabled: true
+        mountPath: /var/syncthing
+        size: 20Gi
