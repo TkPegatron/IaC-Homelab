@@ -13,10 +13,10 @@ stringData:
     NETWORK_LAN_SUMM: "172.22.0.0/23, 10.10.0.0/16, 10.20.0.0/16"
     NETWORK_KUBE_CLUSTER: "10.60.0.0/16"
     NETWORK_KUBE_SERVICE: "10.61.0.0/16"
-    PROMETHEUS_TARGET_ENDPOINTS:
+    PROMETHEUS_TARGET_ENDPOINTS: |
         - 172.22.0.10
         - 172.22.0.11
         - 172.22.0.12
-    PROMETHEUS_EXTERNAL_TARGETS:
+    PROMETHEUS_EXTERNAL_TARGETS: |
         - kvm-xenia.int.zynthovian.xyz
         - kvm-legion.int.zynthovian.xyz
