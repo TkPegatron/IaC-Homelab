@@ -18,14 +18,17 @@ spec:
   timeout: 30m
   values:
     service:
+      main:
+        type: LoadBalancer
+        loadBalancerIP: "172.21.0.1"
+        annotations:
+          metallb.universe.tf/allow-shared-ip: syncthing
       listen:
-        #type: ClusterIP
         type: LoadBalancer
         loadBalancerIP: "172.21.0.1"
         annotations:
           metallb.universe.tf/allow-shared-ip: syncthing
       discovery:
-        #type: ClusterIP
         type: LoadBalancer
         loadBalancerIP: "172.21.0.1"
         annotations:
