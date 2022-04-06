@@ -56,9 +56,9 @@ spec:
         ingressClassName: nginx
         annotations:
           nginx.ingress.kubernetes.io/auth-url: |-
-            https://hajimari.${SECRET_PUBLIC_DOMAIN}/outpost.goauthentik.io/
+            https://hajimari.${SECRET_PUBLIC_DOMAIN}/akprox/
           nginx.ingress.kubernetes.io/auth-signin: |-
-            https://hajimari.${SECRET_PUBLIC_DOMAIN}/outpost.goauthentik.io/start?rd=$escaped_request_uri
+            https://hajimari.${SECRET_PUBLIC_DOMAIN}/akprox/start?rd=$escaped_request_uri
           nginx.ingress.kubernetes.io/auth-response-headers: |-
             Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid
           nginx.ingress.kubernetes.io/auth-snippet: |
@@ -73,13 +73,6 @@ spec:
                     name: hajimari
                     port:
                       number: 3000
-              - path: /outpost.goauthentik.io
-                pathType: Prefix
-                backend:
-                  service:
-                    name: ak-outpost-authentik-embedded-outpost
-                    port:
-                      number: 9000
         tls:
           - hosts:
               - *host
