@@ -7,3 +7,4 @@ resources:
   - media.yaml
   - documents.yaml
   - downloads.yaml
+  - vpn-gateway-system.yaml

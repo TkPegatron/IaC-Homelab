@@ -6,3 +6,4 @@ resources:
   - cert-manager
   - nfs-subdir-provisioner
   - reloader
+  - vpn-gateway
