@@ -53,7 +53,7 @@ spec:
       postgresqlPassword: "${SECRET_AUTHENTIK_DB_PASSWORD}"
       image:
         repository: postgres
-        tag: 14.1
+        tag: 14.2
       persistence:
           enabled: true
     redis:
