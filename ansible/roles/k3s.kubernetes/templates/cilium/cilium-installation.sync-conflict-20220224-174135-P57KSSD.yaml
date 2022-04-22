@@ -434,7 +434,7 @@ spec:
             topologyKey: kubernetes.io/hostname
       containers:
       - name: cilium-agent
-        image: "quay.io/cilium/cilium:v1.11.1@sha256:251ff274acf22fd2067b29a31e9fda94253d2961c061577203621583d7e85bd2"
+        image: "quay.io/cilium/cilium:v1.11.4@sha256:d9d4c7759175db31aa32eaa68274bb9355d468fbc87e23123c80052e3ed63116"
         imagePullPolicy: IfNotPresent
         command:
         - cilium-agent
@@ -550,7 +550,7 @@ spec:
       # Required to mount cgroup2 filesystem on the underlying Kubernetes node.
       # We use nsenter command with host's cgroup and mount namespaces enabled.
       - name: mount-cgroup
-        image: "quay.io/cilium/cilium:v1.11.1@sha256:251ff274acf22fd2067b29a31e9fda94253d2961c061577203621583d7e85bd2"
+        image: "quay.io/cilium/cilium:v1.11.4@sha256:d9d4c7759175db31aa32eaa68274bb9355d468fbc87e23123c80052e3ed63116"
         imagePullPolicy: IfNotPresent
         env:
         - name: CGROUP_ROOT
@@ -577,7 +577,7 @@ spec:
         securityContext:
           privileged: true
       - name: clean-cilium-state
-        image: "quay.io/cilium/cilium:v1.11.1@sha256:251ff274acf22fd2067b29a31e9fda94253d2961c061577203621583d7e85bd2"
+        image: "quay.io/cilium/cilium:v1.11.4@sha256:d9d4c7759175db31aa32eaa68274bb9355d468fbc87e23123c80052e3ed63116"
         imagePullPolicy: IfNotPresent
         command:
         - /init-container.sh
