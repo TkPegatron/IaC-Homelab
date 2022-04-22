@@ -1,0 +1,138 @@
+table inet filter {
+    
+    set unifi_devices {
+        type ether_addr
+        elements = {
+            "e0:63:da:73:76:52"
+        }
+    }
+    
+    set trusted_interfaces {
+        type ifname
+        elements = {
+            "enxe45f0124c.10",
+            "enxe45f0124c.20",
+            "wgra0",
+        }
+    }
+    
+    set trusted_addresses4 {
+        type ipv4_addr
+        flags interval
+        elements = {
+            10.254.254.2/32
+        }
+    }
+    
+    #set trusted_addresses6 {
+    #    type ipv6_addr
+    #    flags interval
+    #    elements = {}
+    #}
+    
+    chain input-dispatch-filter {
+        type filter hook input priority 0; policy drop;
+        
+        # Accept loopback traffic.
+        iiftype loopback accept comment "Accept any loopback traffic"
+        
+        # Drop non-SYN packets.
+        tcp flags & (fin|syn|rst|ack) != syn ct state new counter drop
+        
+        # Match packets based on their contrack state
+        ct state vmap {
+            new: continue,
+            established: accept,
+            related: accept,
+            invalid: drop
+        } comment "Accept established and related connections"
+        
+        # Jump inbound packets to matching chains
+        ip saddr @trusted_addresses4 jump input-trusted
+        #ip6 saddr @trusted_addresses6 jump input-trusted
+        ether saddr @unifi_devices jump input-unifi-devices
+        iifname @trusted_interfaces jump input-trusted
+        
+        jump input-untrusted comment "Send remaining traffic to untrusted"
+        
+        # Traffic that should be accepted on any interface
+        udp dport 51820 accept comment "Wireguard Tunnel traffic"
+        
+        # Reject traffic returning from interface chains.
+        log group 2 reject with icmpx type admin-prohibited
+    }
+    
+    chain input-untrusted {
+        
+        # accepting ping (icmp-echo-request) with rate limiting.
+        icmp type echo-request limit rate 5/second accept
+        icmpv6 type { nd-neighbor-solicit, echo-request, nd-router-advert, nd-neighbor-advert } limit rate 5/second accept
+        
+        ip saddr 67.211.160.100/32 tcp dport 22 \
+            counter jump log-accept \
+            comment "Allow SSH connections from CISP"
+        
+        tcp dport {80,443} jump log-accept comment "Kluster ingress controller"
+        meta l4proto {tcp,udp} th dport 22000 jump log-accept comment "KubeSyncthing"
+        
+        # Return unmatched to previous chain.
+        return
+    }
+    
+    chain input-trusted {
+        
+        # accepting ping (icmp-echo-request) without rate limiting.
+        icmp type echo-request accept
+        icmpv6 type { nd-neighbor-solicit, echo-request, nd-router-advert, nd-neighbor-advert } accept
+        
+        # CRITICAL: Accept DNS and DHCP
+        udp dport {67,68} accept comment "DHCP"
+        meta l4proto {tcp,udp} th dport 53 accept comment "DNS"
+        udp dport 51821 accept comment "Wireguard Tunnel traffic"
+        
+        # CRITICAL: Accept communication related to dynamic routing
+        meta l4proto {tcp,udp} th dport 3784 accept comment "BFD Control"
+        tcp dport 179 accept comment "BGP Peering"
+        
+        # MEDIUM: Accept management services
+        tcp dport 22 jump log-accept comment "Secure Shell"
+        tcp dport {80,443} jump log-accept comment "Webserver/Pihole"
+        tcp dport {8080,8443} jump log-accept comment "Unifi-controller"
+        
+        # MISC: Additional services
+        tcp dport 8180 jump log-accept comment "NginxFileserverCisco"
+        tcp dport 8280 jump log-accept comment "HTML5-Speedtest"
+        tcp dport 5201 jump log-accept comment "iperf3"
+        tcp dport 9100 jump log-accept comment "PrometheusMetrics"
+        
+        # Return unmatched to previous chain.
+        return
+    }
+    
+    chain input-unifi-devices {
+        # Accept traffic needed to adopt and configure
+        #  Unifi/UBNT devices
+        th dport 10001 accept
+        th dport 8080 accept
+        th dport 8443 accept
+        th dport 1900 accept
+        th dport 8843 accept
+        th dport 8880 accept
+        th dport 6789 accept
+        th dport 5514 accept
+        th dport 3478 accept
+        
+        # Return unmatched to previous chain.
+        return
+    }
+    
+    chain log-accept {
+        # Log accepted packets passed to this chain
+        ct state new log group 1 accept
+    }
+    
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
+    
+}

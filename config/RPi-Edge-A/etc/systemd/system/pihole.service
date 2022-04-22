@@ -1,0 +1,24 @@
+[Unit]
+Description=Pihole DNS
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStartPre=mkdir -p /opt/pihole-etc/dnsmasq.d /opt/pihole-etc/pihole
+ExecStartPre=sh -c "/usr/bin/podman kill pihole || /bin/true"
+ExecStartPre=sh -c "/usr/bin/podman rm pihole || /bin/true"
+ExecStartPre=sh -c "/usr/bin/podman pull docker.io/pihole/pihole:latest || /bin/true"
+ExecStart=/usr/bin/podman run --net=host \
+  --cap-add NET_ADMIN --cap-add NET_RAW \
+  --cap-add CAP_NET_BIND_SERVICE \
+  --name pihole -e TZ="America/Detroit" \
+  -e DNSMASQ_LISTENING=all \
+  -v '/opt/pihole-etc/pihole:/etc/pihole/:Z' \
+  -v '/opt/pihole-etc/dnsmasq.d/:/etc/dnsmasq.d/:Z' \
+  docker.io/pihole/pihole:latest
+ExecStop=/usr/bin/podman stop pihole
+Restart=on-failure
+RestartSec=20s
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,39 @@
+table inet filter {
+    
+    chain input-dispatch-filter {
+        type filter hook input priority 0; policy drop;
+        
+        # Accept loopback traffic.
+        iiftype loopback accept comment "Accept any loopback traffic"
+        
+        # Drop non-SYN packets.
+        tcp flags & (fin|syn|rst|ack) != syn ct state new counter drop
+        
+        # Match packets based on their contrack state
+        ct state vmap {
+            new: continue,
+            established: accept,
+            related: accept,
+            invalid: drop
+        } comment "Accept established and related connections"
+
+        # Accept ssh
+        ip saddr 192.168.113.1 tcp dport 22 jump log-accept
+        
+        # Accept promtail api from log aggregator
+        ip saddr 182.168.113.10 tcp dport 9080 accept
+
+        # Reject traffic returning from interface chains.
+        log group 2 reject with icmpx type admin-prohibited
+    }
+
+    chain log-accept {
+        # Log accepted packets passed to this chain
+        ct state new log group 1 accept
+    }
+    
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
+    
+}

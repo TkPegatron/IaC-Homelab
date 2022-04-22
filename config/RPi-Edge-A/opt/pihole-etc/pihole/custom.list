@@ -1,0 +1,8 @@
+172.22.0.1 rpi-egde-fw.int.zynthovian.xyz
+172.22.0.1 firewall.int.zynthovian.xyz
+172.22.0.2 spine-a.int.zynthovian.xyz
+172.22.0.3 kvm-xenia.int.zynthovian.xyz
+172.22.0.4 kvm-legion.int.zynthovian.xyz
+
+172.22.0.130 elp-lnx-lt.int.zynthovian.xyz
+172.22.0.131 op6t.int.zynthovian.xyz

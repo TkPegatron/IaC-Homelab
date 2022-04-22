@@ -1,0 +1,28 @@
+table inet nat {
+    
+    chain prerouting-chain {
+        type nat hook prerouting priority -100;
+        iifname enxe45f0124c8.5 udp dport 22000 dnat ip to 172.21.0.1
+        iifname enxe45f0124c8.5 tcp dport 22000 dnat ip to 172.21.0.1
+#        iifname enxe45f0124c8.5 tcp dport {80,443} dnat ip to 172.21.0.0
+        iifname enxe45f0124c.10 udp dport 53 dnat ip to 172.22.0.1
+        iifname enxe45f0124c.10 tcp dport 53 dnat ip to 172.22.0.1
+        iifname enxe45f0124c.20 udp dport 53 dnat ip to 172.22.0.1
+        iifname enxe45f0124c.20 tcp dport 53 dnat ip to 172.22.0.1
+    }
+    
+    chain input-chain {
+        type nat hook input priority 100;
+    }
+    
+    chain output-chain {
+        type nat hook output priority -100;
+    }
+    
+    chain postrouting-chain {
+        type nat hook postrouting priority 0;
+        iifname wg0 oifname wg0 masquerade comment "Wireguard Hairpin"
+        oifname enxe45f0124c8.5 masquerade comment "Outbound Overload"
+    }
+    
+}

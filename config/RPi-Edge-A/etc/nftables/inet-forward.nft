@@ -1,0 +1,7 @@
+table inet forward {
+    
+    chain forward-chain {
+        type filter hook forward priority 0; policy accept;
+    }
+    
+}

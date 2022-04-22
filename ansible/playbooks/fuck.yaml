@@ -1,0 +1,36 @@
+---
+- hosts:
+    - k3s-master-nodes
+    - k3s-worker-nodes
+  gather_facts: true
+  become: yes
+  any_errors_fatal: true
+  pre_tasks:
+    - name: Pausing for 5 seconds...
+      pause:
+        seconds: 5
+  tasks:
+    - name: Configure inotify watches
+      ansible.builtin.copy:
+        dest: /etc/sysctl.d/99-kubernetes.conf
+        mode: 0644
+        content: |
+          # Configure network to allow routing and firewall
+          net.ipv4.ip_forward = 1
+          net.bridge.bridge-nf-call-iptables = 1
+          net.ipv6.conf.all.forwarding = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+          
+          # Configure rp_filter for cilium cni
+          net.ipv4.conf.default.rp_filter=0
+          net.ipv4.conf.*.rp_filter=0
+          net.ipv4.conf.lxc*.rp_filter = 0
+          
+          # Raise inotify limit for jellyfin/syncthing
+          fs.inotify.max_user_instances=512 
+      register: sysctl_file
+
+    - name: Reload Kubernetes network configuration
+      ansible.builtin.shell: systemctl restart systemd-sysctl
+      when:
+        - sysctl_file.changed
