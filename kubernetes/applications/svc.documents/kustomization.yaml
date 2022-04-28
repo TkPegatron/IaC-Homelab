@@ -4,5 +4,4 @@ kind: Kustomization
 resources:
   - syncthing
   - vaultwarden
-  - nodered
-# - wekan
+  - grist

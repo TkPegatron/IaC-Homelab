@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grist-env
+  labels:
+    app.kubernetes.io/name: grist
+    app.kubernetes.io/instance: grist
+  namespace: documents
+data:
+  DEBUG: "true"
+  GRIST_DEFAULT_EMAIL: "elliana.perry@gmail.com"
+  PUID: "568"
+  USER_ID: "568"
+  UID: "568"
+  UMASK: "2"
+  UMASK_SET: "2"
+  PGID: "568"
+  GROUP_ID: "568"
+  GID: "568"
+  TZ: "UTC"
+  PORT: "10163"
+  TYPEORM_DATABASE: "/persist/home.sqlite3"
+  GRIST_SINGLE_ORG: "docs"
+  PYTHON_VERSION_ON_CREATION: "3"
+  GRIST_HOST: "0.0.0.0"
+  GRIST_SINGLE_PORT: "true"
+  GRIST_SERVE_SAME_ORIGIN: "true"
+  GRIST_DATA_DIR: "/persist/docs"
+  GRIST_INST_DIR: "/persist"
+  GRIST_SESSION_COOKIE: "grist_core"
+  GRIST_ADAPT_DOMAIN: "false"
+  APP_HOME_URL: "https://grist.zynthovian.xyz"
+  APP_DOC_URL: "https://grist.zynthovian.xyz"
+  APP_DOC_INTERNAL_URL: "https://grist.zynthovian.xyz"
