@@ -1,0 +1,44 @@
+---
+- name: Restart and enable nftables systemd service
+  ansible.builtin.systemd:
+    name: nftables.service
+    state: restarted
+    daemon_reload: true
+    enabled: true
+  listen: "reload nftables"
+  become: true
+  when: (nftables_state|default('absent')) == 'present'
+  
+- name: Stop and disable nftables systemd service
+  ansible.builtin.systemd:
+    name: nftables.service
+    state: stopped
+    daemon_reload: true
+    enabled: false
+  listen: "reload nftables"
+  when: (nftables_state|default('absent')) != 'present'
+
+- name: Restart and enable nftables-blackhole systemd services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+    enabled: true
+  listen: "reload nftables-blackhole"
+  become: true
+  when: (nftables_blackhole|default('absent')) == 'present'
+  loop:
+    - "nft-blackhole.service"
+    - "nft-blackhole-reload.timer"
+  
+- name: Stop and disable nftables-blackhole systemd services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: stopped
+    daemon_reload: true
+    enabled: false
+  listen: "reload nftables-blackhole"
+  when: (nftables_blackhole|default('absent')) != 'present'
+  loop:
+    - "nft-blackhole.service"
+    - "nft-blackhole-reload.timer"

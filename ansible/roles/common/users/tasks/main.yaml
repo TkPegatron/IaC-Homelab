@@ -1,0 +1,35 @@
+- name: Create account for Elliana Perry
+  ansible.builtin.user: 
+    comment: "Elliana Perry"
+    append: yes
+    groups:
+      - wheel
+      - dialout
+    name: eperry
+    password: $6$d50MJLYaamCunkCY$n0yjexmtkP86y5/igOH4q.D7uWdCQYEJqoSosFqK14Nxse9fb/jrlnt/avvGXnhmPHspgduuiyd4q6HxyciYd/
+
+- name: Coppy Eperry's SSH keys from github
+  ansible.posix.authorized_key:
+    user: eperry
+    state: present
+    key: https://github.com/tkpegatron.keys
+
+- name: Create account for Ansible
+  ansible.builtin.user: 
+    comment: "Automation Controller"
+    append: yes
+    groups:
+      - wheel
+    name: ansible
+    password: $6$d50MJLYaamCunkCY$n0yjexmtkP86y5/igOH4q.D7uWdCQYEJqoSosFqK14Nxse9fb/jrlnt/avvGXnhmPHspgduuiyd4q6HxyciYd/
+
+- name: Copy SSH keys
+  ansible.posix.authorized_key:
+    user: ansible
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOkCJxXefrBTfQdc8vr1X95ZNEhP1BlRbVGXgVfjDcbv Ansible@*"
+
+- name: Configure sudo
+  ansible.builtin.copy:
+    content: |
+      %wheel ALL=(ALL) NOPASSWD: ALL
+    dest: /etc/sudoers.d/wheel-all-nopass
