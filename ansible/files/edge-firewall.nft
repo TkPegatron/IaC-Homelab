@@ -90,7 +90,8 @@ table inet main-filter {
 
     # Match packets based on their contrack state
     ct state vmap {
-      new: continue, invalid: drop
+      new: continue, invalid: drop,
+      established: accept, related: accept
     } comment "Accept established and related connections"
 
     # -{Jumpchain for connections inbound from WAN interface}
