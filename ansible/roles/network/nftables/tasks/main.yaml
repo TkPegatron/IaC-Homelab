@@ -1,0 +1,139 @@
+- name: Configure sysconfig to read the file from /etc/
+  ansible.builtin.copy:
+    content: |
+      include "/etc/nftables/main.nft"
+    dest: /etc/sysconfig/nftables.conf
+  notify: "reload nftables"
+  when: nftables_state == "present"
+
+- name: Template NFTables configuration
+  ansible.builtin.template:
+    src: templates/generic.nft.j2
+    dest: /etc/nftables/main.nft
+    validate: /usr/sbin/nft -c -f %s
+  notify: "reload nftables"
+  when: 
+    - nftables_config_file is not defined
+    - nftables_state == "present"
+
+- name: Copy NFTables configuration
+  ansible.builtin.copy:
+    src: "{{ nftables_config_file }}"
+    dest: /etc/nftables/main.nft
+    validate: /usr/sbin/nft -c -f %s
+  notify: "reload nftables"
+  when: 
+    - nftables_config_file is defined
+    - nftables_state == "present"
+
+- name: Cleanup NFTables
+  ansible.builtin.file:
+    state: absent
+    path: /etc/nftables/main.nft
+  notify: "reload nftables"
+  when: (nftables_state|default('absent')) != "present"
+
+#
+# -- { IP-Based blackhole of known attack sources } --
+#
+
+
+
+- name: Download ntf-blackhole from git
+  ansible.builtin.get_url:
+    url: https://github.com/tomasz-c/nft-blackhole/archive/refs/tags/v1.1.0.tar.gz
+    dest: /tmp/nft-blackhole-v1.1.0.tar.gz
+  when: (nftables_blackhole|default('absent')) == "present"
+
+- name: Unarchive ntf-blackhole
+  ansible.builtin.unarchive:
+    src: /tmp/nft-blackhole-v1.1.0.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  when: (nftables_blackhole|default('absent')) == "present"
+
+- name: Install ntf-blackhole
+  ansible.builtin.shell:
+    chdir: /tmp/nft-blackhole-1.1.0
+    cmd: |
+      cp nft-blackhole.conf /etc/
+      cp nft-blackhole.py   /usr/bin/
+      mkdir /usr/share/nft-blackhole
+      cp nft-blackhole.template /usr/share/nft-blackhole/
+      cp nft-blackhole.service        /lib/systemd/system/
+      cp nft-blackhole-reload.service /lib/systemd/system/
+      cp nft-blackhole-reload.timer   /lib/systemd/system/
+  when: (nftables_blackhole|default('absent')) == "present"
+  notify: "reload nftables-blackhole"
+  args:
+    executable: /bin/bash
+
+- name: Uninstall ntf-blackhole
+  ansible.builtin.shell:
+    cmd: |
+      rm -rf /usr/share/nft-blackhole
+      rm /etc/nft-blackhole.conf
+      rm /usr/bin/nft-blackhole.py
+      rm /lib/systemd/system/nft-blackhole.service
+      rm /lib/systemd/system/nft-blackhole-reload.service
+      rm /lib/systemd/system/nft-blackhole-reload.timer
+  when: 
+      (nftables_blackhole|default('absent')) != "present" 
+      or (nftables_state|default('absent')) != "present"
+  notify: "reload nftables-blackhole"
+  args:
+    executable: /bin/bash
+
+- name: Create venv with needed dependencies
+  ansible.builtin.pip:
+    virtualenv: /usr/share/nft-blackhole
+    virtualenv_command: "python3 -m venv"
+    name: 
+      - pyyaml
+  when: (nftables_state|default('absent')) == "present"
+
+- name: Ensure systemd directories exist
+  ansible.builtin.file: "{{ item }}"
+  loop:
+    - path: /etc/systemd/system/nft-blackhole.service.d
+      state: directory
+    - path: /etc/systemd/system/nft-blackhole-reload.service.d
+      state: directory
+  when: (nftables_state|default('absent')) == "present"
+
+- name: Patch nft-blackhole.service
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      After=nftables.service
+      Requires=nftables.service
+      PartOf=nftables.service
+      
+      [Service]
+      ExecStart=
+      ExecStop=
+      ExecReload=
+      ExecStart=/usr/share/nft-blackhole/bin/python3 /usr/bin/nft-blackhole.py start
+      ExecStop=/usr/share/nft-blackhole/bin/python3 /usr/bin/nft-blackhole.py stop
+      ExecReload=/usr/share/nft-blackhole/bin/python3 /usr/bin/nft-blackhole.py reload
+      
+      [Install]
+      WantedBy=multi-user.target nftables.service
+    dest: /etc/systemd/system/nft-blackhole.service.d/override.conf
+  notify: "reload nftables-blackhole"
+  when: (nftables_state|default('absent')) == "present"
+
+- name: Patch nft-blackhole-reload.service
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      After=nftables.service
+      Requires=nftables.service
+      PartOf=nftables.service
+      
+      [Service]
+      ExecStart=
+      ExecStart=/usr/share/nft-blackhole/bin/python3 /usr/bin/nft-blackhole.py reload
+    dest: /etc/systemd/system/nft-blackhole-reload.service.d/override.conf
+  notify: "reload nftables-blackhole"
+  when: (nftables_state|default('absent')) == "present"

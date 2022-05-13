@@ -1,0 +1,171 @@
+#!/usr/sbin/nft -f
+
+define chromecast = 0.0.0.0 #! CHANGEME!!!
+
+table inet filter {
+
+  set unifi_devices {
+    type ether_addr
+    elements = {
+      "e0:63:da:73:76:52"
+    }
+  }
+
+  flowtable flow_table {
+    hook ingress priority 0; devices = { enp3s0f3u1u1u1 };
+  }
+
+  chain output-filter {
+    type filter hook output priority 0; policy accept;
+  }
+
+  chain input-dispatch-filter {
+    type filter hook input priority 0; policy drop;
+
+    # Accept loopback traffic.
+    iiftype loopback accept comment "Accept any loopback traffic"
+
+    # Drop non-SYN packets.
+    tcp flags & (fin|syn|rst|ack) != syn ct state new counter drop
+
+    # Match packets based on their contrack state
+    ct state vmap {
+      new: continue,
+      established: accept,
+      related: accept,
+      invalid: drop
+    } comment "Accept established and related connections"
+
+    # -{Jumpchain for connections inbound from WAN interface}
+    iifname "wan" jump input-filter-outside
+    # Connections from AP's are allowed to unifi controller
+    ether saddr @unifi_devices jump input-filter-unifi
+    # -{Jumpchain for connections inbound from trusted sources}
+    iifname { "lan", "management" } jump input-filter-trusted
+    # -{Jumpchan for connections inbound from all sources}
+    jump input-filter-all
+
+    # -{Reject traffic returning from interface chains}
+    log group 2 reject with icmpx type admin-prohibited
+  }
+
+  chain input-filter-all {
+    # -{Allow icmp-echo-requests}
+    icmp type echo-request accept
+    icmpv6 type { 
+      nd-neighbor-solicit,
+      echo-request,
+      nd-router-advert,
+      nd-neighbor-advert
+    } accept
+    # -{Allow LLMNR from chromecast for reflection}
+    iifname "iot" ip saddr $chromecast tcp dport { llmnr } counter accept
+    iifname "iot" ip saddr $chromecast udp dport { mdns, llmnr } counter accept
+    # -{Allow wireguard connections}
+    udp dport 51820 accept comment "Wireguard Tunnel traffic"
+    # -{Return unmatched to previous chain}
+    return
+  }
+
+  chain input-filter-outside {
+    # -{Log all traffic coming from the wan interface for PSAD}
+    #ct state new log continue
+    # -{Rate-limit icmp-echo-requests}
+    icmp type \
+      echo-request limit rate 5/second accept
+    icmpv6 type { 
+      nd-neighbor-solicit,
+      echo-request,
+      nd-router-advert,
+      nd-neighbor-advert
+    } limit rate 5/second accept
+    # -{Allow SSH connections from CISP}
+    ip saddr 67.211.160.100/32 tcp dport 22 \
+      counter jump log-accept \
+      comment "Allow SSH connections from CISP"
+    # -{Return unmatched to previous chain}
+    return
+  }
+
+  chain input-filter-trusted {
+    # -{Accept DHCP and DNS connections}
+    udp dport {67,68} accept comment "DHCP"
+    meta l4proto {tcp,udp} th dport 53 accept comment "DNS"
+    # -{Accept management services}
+    tcp dport 22 jump log-accept comment "Secure Shell"
+    tcp dport {80,443} jump log-accept comment "Webserver/Pihole"
+    tcp dport {8080,8443} jump log-accept comment "Unifi-controller"
+    # -{Return unmatched to previous chain}
+    return
+  }
+
+  chain input-filter-unifi {
+    # -{Accept connections to the unifi controler service}
+    th dport {
+      10001,8080,8443,
+      1900,8843,8880,
+      6789,5514,3478
+    } accept
+    # -{Return unmatched to previous chain}
+    return
+  }
+
+  chain log-accept {
+    # -{Log accepted packets passed to this chain}
+    ct state new log group 1 accept
+  }
+
+  chain forward-chain {
+    type filter hook forward priority 0; policy drop;
+
+    # -{Log all traffic coming from the wan interface for PSAD}
+    #iifname wan ct state new log continue
+
+    # -{Offload established connections to the flowtable}
+    meta l4proto { tcp, udp } flow offload @flow_table
+
+    iifname { "lan", "wgra0", "management" } oifname "wan" \
+      counter accept comment "Allow outbound traffic"
+
+    iifname "wan" oifname { "lan", "iot", "wgra0", "management" } \
+      ct state established,related counter accept comment "Allow established"
+
+    # -{ Allow the chromecast to make outbound connections}
+    iifname "iot" oifname "wan" ip saddr $chromecast tcp dport { 80, 443 } counter accept
+    iifname "iot" ip saddr $chromecast oifname { "lan" } counter accept
+
+  }
+
+}
+
+table inet nat {
+  chain nat-prerouting {
+    type nat hook prerouting priority -100;
+    # -{Forward syncthing traffic to the kubernetes ExternalIP}
+    iifname { 
+      "lan", "iot", "wgra0", "management"
+    } meta l4proto { tcp, udp } th dport 22000 dnat ip to 172.21.0.1
+
+    # -{Forward HTTP connections to the kubernetes ExternalIP}
+    iifname { 
+      "lan", "iot", "wgra0", "management"
+    } tcp dport {80,443} dnat ip to 172.21.0.0
+
+    # -{Prevent alternative nameservers}
+    iifname {
+      "lan", "iot", "wgra0", "management" 
+    } meta l4proto { tcp, udp } th dport 53 dnat ip to 172.22.0.1
+  }
+
+  chain nat-postrouting {
+    type nat hook postrouting priority 0;
+    iifname wgra0 oifname wgra0 masquerade comment "Wireguard Hairpin"
+    oifname wan masquerade comment "Outbound Overload"
+  }
+}
+
+table inet fail2ban {
+  chain input {
+    type filter hook input priority -100;
+  }
+}

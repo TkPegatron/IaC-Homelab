@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grist
+  namespace: documents
+  labels:
+    app.kubernetes.io/name: grist
+    app.kubernetes.io/instance: grist
+spec:
+  type: ClusterIP
+  ports:
+    - port: 10163
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: grist
+    app.kubernetes.io/instance: grist
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grist
+  namespace: documents
+  labels:
+    app.kubernetes.io/name: grist
+    app.kubernetes.io/instance: grist
+  annotations:
+    hajimari.io/enable: 'true'
+    hajimari.io/icon: finance
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - grist.zynthovian.xyz
+  rules:
+    - host: grist.zynthovian.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grist
+                port:
+                  number: 10163

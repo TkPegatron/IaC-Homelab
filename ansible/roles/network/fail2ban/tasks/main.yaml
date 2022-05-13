@@ -1,0 +1,59 @@
+- name: Create logfile for the daemon
+  ansible.builtin.file:
+    path: /var/log/fail2ban.log
+    state: file
+
+- name: Configure F2B Jails
+  ansible.builtin.copy:
+    content: |
+      [DEFAULT]
+      banaction          = nftables[type=multiport]
+      banaction_allports = nftables[type=allports]
+      
+      bantime.increment    = true
+      bantime.overalljails = true
+      
+      ignoreip = 127.0.0.1/8 ::1 172.22.0.0/16
+      
+      [sshd]
+      enabled = true
+    dest: /etc/fail2ban/jail.local
+  notify: fail2ban
+
+- name: Configure F2B NFtables integration
+  ansible.builtin.copy:
+    content: |
+      [Init]
+      table          = fail2ban
+      chain_priority = -100
+      blocktype      = drop
+    dest: /etc/fail2ban/action.d/nftables-common.local
+  notify: fail2ban
+
+- name: Ensure /etc/systemd/system/fail2ban.service.d exists
+  ansible.builtin.file: path=/etc/systemd/system/fail2ban.service.d state=directory
+
+- name: Configure systemd unit override
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      After=nftables.service
+      Requires=nftables.service
+      PartOf=nftables.service
+      
+      [Service]
+      PrivateDevices=yes
+      PrivateTmp=yes
+      ProtectHome=read-only
+      ProtectSystem=strict
+      ReadWritePaths=-/var/run/fail2ban
+      ReadWritePaths=-/var/lib/fail2ban
+      ReadWritePaths=-/var/log/fail2ban.log
+      ReadWritePaths=-/var/spool/postfix/maildrop
+      ReadWritePaths=-/run/xtables.lock
+      CapabilityBoundingSet=CAP_AUDIT_READ CAP_DAC_READ_SEARCH CAP_NET_ADMIN CAP_NET_RAW
+      
+      [Install]
+      WantedBy=multi-user.target nftables.service
+    dest: /etc/systemd/system/fail2ban.service.d/override.conf
+  notify: fail2ban

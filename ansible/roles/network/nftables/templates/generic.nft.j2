@@ -1,0 +1,53 @@
+table inet fail2ban {}
+
+table inet filter {
+
+  flowtable flow_table {
+    hook ingress priority 0; devices = { enp1s0 };
+  }
+
+  chain output-filter {
+    type filter hook output priority 0; policy accept;
+  }
+
+  chain input-filter {
+    type filter hook input priority 0; policy drop;
+    
+    # -{Accept loopback traffic}
+    iiftype loopback accept comment "Accept any loopback traffic"
+    
+    # -{Drop non-SYN packets}
+    tcp flags & (fin|syn|rst|ack) != syn ct state new counter drop
+    
+    # -{Match packets based on their contrack state}
+    ct state vmap {
+      new: continue,
+      established: accept,
+      related: accept,
+      invalid: drop
+    } comment "Accept established and related connections"
+{% for zn, zone in nftables_zones.items() %}
+
+    {{ zone.jump_match + " " }}jump input-filter-{{ zn }}
+
+{% endfor %}
+    # -{Reject traffic returning from interface chains}
+    log group 2 reject with icmpx type admin-prohibited
+  }
+{% for zn, zone in nftables_zones.items() %}
+
+  chain input-filter-{{ zn }} {
+    {{ zone.rules }}
+    # -{Return unmatched to previous chain}
+    return
+  }
+
+{% endfor %}
+  chain forward-chain {
+    type filter hook forward priority 0; policy drop;
+
+    # -{Offload established connections to the flowtable}
+    meta l4proto { tcp, udp } flow offload @flow_table
+  }
+
+}
