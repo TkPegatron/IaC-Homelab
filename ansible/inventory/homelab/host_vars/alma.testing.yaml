@@ -4,10 +4,29 @@ ansible_host: 192.168.122.230
 #  It is not the job of these playbooks to configure the network interfaces
 #   However, some plays/roles require interface names for proper configuration
 network:
-  wan_ifname: wan # Wide Area Network
-  man_ifname: man # Management Area Network
-  lan_ifname: lan # Local Area network
-  iot_ifname: iot # Internet of Things
+  wan_ifname: wan@enp1s0 # Wide Area Network
+  man_ifname: man@enp1s0 # Management Area Network
+  lan_ifname: lan@enp1s0 # Local Area network
+  iot_ifname: iot@enp1s0 # Internet of Things
+  interfaces:
+    - ifname: enp1s0
+      vlans:
+        - id: 5
+          ifname: wan
+          method: auto
+          dns_servers: ['1.1.1.1','8.8.8.8']
+        - id: 10
+          ifname: man
+          method: manual
+          ipv4_address: 172.22.0.1/25
+        - id: 20
+          ifname: lan
+          method: manual
+          ipv4_address: 172.22.1.1/25
+        - id: 30
+          ifname: iot
+          method: manual
+          ipv4_address: 172.22.1.129/25
 
 # -{Role states}
 #  Roles will be installed or cleaned up depending on the value
@@ -22,14 +41,15 @@ sshd_mfa_state: present
 ## -{ NFTABLES }
 #nftables_config:
 nftables_blackhole: present
-nftables_zones:
-  public:
-    jump_match: ""
-    rules: |
-      # -{Allow icmp-echo-requests}
-      icmp type echo-request accept
-      icmpv6 type echo-request accept
-      # -{Allow ssh connections}
-      tcp dport 22 accept
+nftables_config_file: "{{ playbook_dir }}/../files/edge-firewall.nft"
+#nftables_zones:
+#  public:
+#    jump_match: ""
+#    rules: |
+#      # -{Allow icmp-echo-requests}
+#      icmp type echo-request accept
+#      icmpv6 type echo-request accept
+#      # -{Allow ssh connections}
+#      tcp dport 22 accept
 
 
