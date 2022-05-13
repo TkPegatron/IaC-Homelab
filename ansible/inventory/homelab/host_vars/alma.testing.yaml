@@ -1,0 +1,35 @@
+ansible_host: 192.168.122.230
+
+# -{Interface map}
+#  It is not the job of these playbooks to configure the network interfaces
+#   However, some plays/roles require interface names for proper configuration
+network:
+  wan_ifname: wan # Wide Area Network
+  man_ifname: man # Management Area Network
+  lan_ifname: lan # Local Area network
+  iot_ifname: iot # Internet of Things
+
+# -{Role states}
+#  Roles will be installed or cleaned up depending on the value
+#   Possible values: "present", "absent"
+nftables_state: present
+fail2ban_state: present
+# !-{These are WIP}
+dynroute_state: present
+sshd_mfa_state: present
+
+# -{Role configurations}
+## -{ NFTABLES }
+#nftables_config:
+nftables_blackhole: present
+nftables_zones:
+  public:
+    jump_match: ""
+    rules: |
+      # -{Allow icmp-echo-requests}
+      icmp type echo-request accept
+      icmpv6 type echo-request accept
+      # -{Allow ssh connections}
+      tcp dport 22 accept
+
+

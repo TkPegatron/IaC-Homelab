@@ -1,0 +1,12 @@
+- name: "Configure AlmaTest"
+  gather_facts: false
+  hosts: alma.testing
+  become: true
+  roles:
+    - common/users
+    #- common/sshd_mfa
+    #- network/interfaces
+    - network/nftables
+    - network/fail2ban
+    #- network/bird
+    

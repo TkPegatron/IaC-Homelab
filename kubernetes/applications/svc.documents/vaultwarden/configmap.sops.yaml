@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: vaultwarden-env
+    labels:
+        app.kubernetes.io/name: vaultwarden
+        app.kubernetes.io/instance: vaultwarden
+    namespace: documents
+data:
+    DOMAIN: ENC[AES256_GCM,data:GOOckyhuCJ02nlOMj7fx85mmaFjF1kTo8VuaEA==,iv:i52kxxlT5HY080a6n7BA9yMUu1lYDKz19mck+NPGmRA=,tag:Z2Iee9hbwFDyYIl5gUjZ0g==,type:str]
+    ADMIN_TOKEN: ENC[AES256_GCM,data:nXCTYnr68U5ZCVm3rTdbucgB4+wQxFQRV2apP+cb8q+mH44/h8D9Yq1eACyRreGdPa8KcTGO5geaGa6dsnxkFg==,iv:wYxH1yJsLv1PCxgEY9ujgMeS5nawuKWKSCi/hJlCnIg=,tag:XuQv5di/aE7g+PaOxFmaUg==,type:str]
+    SIGNUPS_ALLOWED: ENC[AES256_GCM,data:WZ7BACk=,iv:c+GWXWmNxaMMjtYFuTJf9lOqDdzJTGvjeU2XJmZbl/s=,tag:4Cj4IRTb1QAIx0HeYFG0qg==,type:bool]
+    SHOW_PASSWORD_HINT: ENC[AES256_GCM,data:2FkZYD8=,iv:BlIuJZp0bu7TeVBsyGeh2gBjTVH4i/tArGuIe6pcppE=,tag:BImmiPaLIJREjkt7GF5Qag==,type:bool]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2022-04-29T18:24:16Z"
+    mac: ENC[AES256_GCM,data:9MOi+Lg8fc941ODcK7jyY4om1+lr77FvkRY810hwyeHJQcbmz9Q4bhhmkXsVbCNp1Y4soCn1fr4OJvtYGCHyhUEZYMkrNhJrd8WgD/QQZsvQ8NW6nZTAVs7fJBN0lOzYZn//TmICCP+XedVcrdTRHN4o2d6X0zOX3B5LvTm/iv0=,iv:eSO51FBjlteff2d3faRiBAGc3+o9sJjft7lc/77vPbg=,tag:DwKS7EhNKFVPd7GGu9xDGA==,type:str]
+    pgp:
+        - created_at: "2022-04-29T18:24:15Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA2SjgiqYlWcgARAAij0xNzDWX+vXjPrikOcHr0djmalEECLP9YapOUxfrzra
+            0YZwAo5pYHytP1HZ1HlPI0/mQlV1gBlBGLKwI5sD15y5YHETOhtfpo6i3X18ZgSh
+            Mmy5fWudbZAAuIq5Is6MOsvDe1Zap+HPsXyBLWzQU9HFI8SOLCIJKx+bJZScwNLR
+            FhHw0HzdfkfovkCqLK1RdKOe4NyltGU2XsSHtq2O9iCEdiN7UEgLEKogc6+4oRfX
+            /qCT08NkIOAwfhYBglVibGIKLmsUeTO7uso0iCzAp7gPm1FsW4UrOGLtP/oMf0t7
+            IIUx7A+DtsrCGxgQW8RozZc+gjs4oQKpGatv5FuQ218CC3ytB4q2njl6cQu0RU48
+            qWl8hKrGDUF5J1TmcR3/XxvsbsAF7JUa79DoVN7cmHemSUdfNbIigEOz3xyptv1s
+            AipUnqHeKPBYS7giNaasSD8scI0RxRr10sNARtmH5fnd+65Sj2kgMJrm3Nu+ECct
+            u5DI3j3rEnWCgwfvoo/G0XTC2hOBCxijnxbTfzNz7HLKFUs5djXhYQAHlNk+S60N
+            vwysRREuSzyzV+897pikaThTZ9vN1MtB4pYU76qiebFUnZIsH72uxRT2meZPvCNN
+            69soGVjF11MaOJoV2w+9E/Xn9hgmaozDWndkkS/VGuciSQh/SIO28Ma7t6iAUhfS
+            XAF1bXievDGeyWbTBEqGDpmcSiO4BV6sBszAWpblER5QDiPgB/n/PUiifGDI9fLC
+            khb18ewcAlP8Qk919xF+2jtCg6iRr2NwOWHHUD3asi2NYU6oAtAn+lflgkCH
+            =8TVV
+            -----END PGP MESSAGE-----
+          fp: 0B7275A133DEA971175DF634F14FAC73727DD99B
+        - created_at: "2022-04-29T18:24:15Z"
+          enc: |
+            -----BEGIN PGP MESSAGE-----
+
+            hQGMAzzcuyRg0rbSAQv6AsZ2WL59ulReBiKllIYQn+4xG1MKfLOCgBWvp9pNwYHH
+            HBmNYx0GMt/cce4EJA7NLIjW/I6veFwv9ltbXV/yKlv6uFUg21LhPr7LWIZwYEl2
+            a0/y555MiAf9KNbs9poOfYaKpzUTkYuhuXYfTUrga0UWgr5skqiWEWwY8kF4whKf
+            xSM2kmTHRSk3dxvVD60aXsCi8ct8x/0kjks8If7ec/oEVjfIlNSj4pWtLNr74F6c
+            5jbCIb9te0brCOFqg+rXi4fBOaf2rsccQ3lQq4LDHsnOdN+RNUNbxg3+dcD+jhPM
+            JjA07R4s6TTgc5f1rVC/kOs4vK+IDPouI03udzJcJlLx7BTKHBuI8SkXb6qFJlne
+            Ru6gBeOGpUdpssNMH7UjPBC6hGWeSJcAF+B5X5lhwtsizewTGBGsNFzSVLrRrpa0
+            /CEYw2yDb23At2z+s6q7hLNmrN6853fd8XHAvixSpK/WtTP8RfzyDrLEVkocWMXB
+            MfVRaCDG6MHNdtDWET/q0lwBvLDiIWdXsHcGoazP5e0c10J778jmh4gNpQq2trGn
+            I8UpvgeIqDkkAXsL1Z1axkPjpXOSxI10Nx4RVTHfrAFiMjn7a9mgWQsfrRJ5bpNt
+            Wr8MtOD27Ec5BdztoQ==
+            =3hOz
+            -----END PGP MESSAGE-----
+          fp: 90AB4A0FF0F17A5CAC2AEABAA538A7E3EC07999A
+    encrypted_regex: ^(data|stringData)$
+    version: 3.7.1
