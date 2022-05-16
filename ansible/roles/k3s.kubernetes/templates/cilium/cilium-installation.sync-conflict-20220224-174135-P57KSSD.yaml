@@ -720,7 +720,7 @@ spec:
             topologyKey: kubernetes.io/hostname
       containers:
       - name: cilium-operator
-        image: quay.io/cilium/operator-generic:v1.11.1@sha256:977240a4783c7be821e215ead515da3093a10f4a7baea9f803511a2c2b44a235
+        image: quay.io/cilium/operator-generic:v1.11.5@sha256:8ace281328b27d4216218c604d720b9a63a8aec2bd1996057c79ab0168f9d6d8
         imagePullPolicy: IfNotPresent
         command:
         - cilium-operator-generic
