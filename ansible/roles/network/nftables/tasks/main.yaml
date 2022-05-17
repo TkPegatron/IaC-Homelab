@@ -1,4 +1,4 @@
-- name: Configure sysconfig to read the file from /etc/
+- name: Configure sysconfig to read the main file from /etc/nftables
   ansible.builtin.copy:
     content: |
       include "/etc/nftables/main.nft"
@@ -8,23 +8,12 @@
 
 - name: Template NFTables configuration
   ansible.builtin.template:
-    src: templates/generic.nft.j2
+    src: "{{ nftables_config_file | default('templates/generic.nft.j2') }}"
     dest: /etc/nftables/main.nft
     validate: /usr/sbin/nft -c -f %s
   notify: "reload nftables"
-  when: 
-    - nftables_config_file is not defined
-    - nftables_state == "present"
-
-- name: Copy NFTables configuration
-  ansible.builtin.copy:
-    src: "{{ nftables_config_file }}"
-    dest: /etc/nftables/main.nft
-    validate: /usr/sbin/nft -c -f %s
-  notify: "reload nftables"
-  when: 
-    - nftables_config_file is defined
-    - nftables_state == "present"
+  become: true
+  when: nftables_state == "present"
 
 - name: Cleanup NFTables
   ansible.builtin.file:
@@ -36,8 +25,6 @@
 #
 # -- { IP-Based blackhole of known attack sources } --
 #
-
-
 
 - name: Download ntf-blackhole from git
   ansible.builtin.get_url:
