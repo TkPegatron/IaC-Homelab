@@ -2,6 +2,8 @@
   ansible.builtin.file:
     path: /var/log/fail2ban.log
     state: file
+    mode: 0644
+    owner: root
 
 - name: Configure F2B Jails
   ansible.builtin.copy:
@@ -13,11 +15,13 @@
       bantime.increment    = true
       bantime.overalljails = true
       
-      ignoreip = 127.0.0.1/8 ::1 172.22.0.0/16
+      ignoreip = 127.0.0.1/8 ::1 {{ fail2ban_ignoreip }}
       
       [sshd]
       enabled = true
     dest: /etc/fail2ban/jail.local
+    mode: 0644
+    owner: root
   notify: fail2ban
 
 - name: Configure F2B NFtables integration
@@ -29,6 +33,8 @@
       blocktype      = drop
       chain_hook     = prerouting
     dest: /etc/fail2ban/action.d/nftables-common.local
+    mode: 0644
+    owner: root
   notify: fail2ban
 
 - name: Ensure /etc/systemd/system/fail2ban.service.d exists
@@ -57,4 +63,6 @@
       [Install]
       WantedBy=multi-user.target nftables.service
     dest: /etc/systemd/system/fail2ban.service.d/override.conf
+    mode: 0644
+    owner: root
   notify: fail2ban
