@@ -8,5 +8,10 @@
 
 </div>
 
+This lab environment hosts a personal kubernetes cluster and self-engineered linux firewall.
 
-More in-depth documentation can be found in [./docs](./docs).
+The cluster is used to host a collection of personal cloud services such as a password manager, relational spreadsheet system, various media services, file-based synchronization, and centralized authentication.
+
+My major goal with this repo is to learn both Linux system administration and engineering as well as kubernetes while also fostering infrastructure as code and ops skills.
+
+More in-depth documentation, including drawio diagrams can be found in [./docs](./docs).
