@@ -1,0 +1,18 @@
+[connection] 
+id=vlan{{ id }}
+interface-name={{ ifname }}
+type=vlan
+uuid={{ uuid }}
+autoconnect=true
+read-only=true
+
+[vlan] 
+interface-name={{ ifname }}
+parent={{ parent_interface }}
+id={{ id }}
+
+[ipv4] 
+method={{ method }}
+{% if method == "manual" %}
+address={{ ipv4_address }}
+{% endif %}

@@ -1,0 +1,13 @@
+- name: Template keyfile for vlan{{ item.1.id }} on {{ item.0.ifname }}
+  ansible.builtin.template:
+    src: templates/nm-vlan.ini.j2
+    dest: "/etc/NetworkManager/system-connections/vlan{{ item.1.id }}.nmconnection"
+    mode: 0600
+  loop: "{{ network.interfaces | subelements('vlans') }}"
+  vars:
+    parent_interface: "{{ item.0.ifname }}"
+    uuid: "{{ item.1.uuid | default(lookup('password', '/dev/null chars=ascii_letters,digits') | to_uuid ) }}"
+    id: "{{ item.1.id }}"
+    ifname: "{{ item.1.ifname }}"
+    method: "{{ item.1.method | default('auto') }}"
+    ipv4_address: "{{ item.1.ipv4_address | default(omit) }}"
