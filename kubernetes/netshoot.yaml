@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cluster-netshoot
+  namespace: kube-system
+  labels:
+    app: netshoot
+spec:
+  selector:
+    matchLabels:
+      name: cluster-netshoot
+  template:
+    metadata:
+      labels:
+        name: cluster-netshoot
+    spec:
+      containers:
+        - name: netshoot
+          image: nicolaka/netshoot
+          # Just spin & wait forever
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "while true; do sleep 30; done;" ]
+          resources:
+            limits:
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          imagePullPolicy: Always
+      restartPolicy: Always
