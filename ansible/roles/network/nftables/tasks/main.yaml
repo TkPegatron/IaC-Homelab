@@ -1,3 +1,10 @@
+- name: Install python and tar
+  ansible.builtin.dnf:
+    name:
+      - tar
+      - python3
+    state: present
+
 - name: Configure sysconfig to read the main file from /etc/nftables
   ansible.builtin.copy:
     content: |

@@ -6,6 +6,7 @@
   ansible.builtin.shell:
     cmd: "cat /var/local/nft-blackhole/version.txt || /bin/true"
   register: cat_bh_ver
+  changed_when: False
 
 - name: Uninstall ntf-blackhole
   ansible.builtin.shell:
@@ -26,7 +27,6 @@
   notify: "reload nftables-blackhole"
   args:
     executable: /bin/bash
-
 
 - name: Manage nft-blackhole
   when:
