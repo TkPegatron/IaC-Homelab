@@ -6,7 +6,7 @@
       - wheel
       - dialout
     name: eperry
-    password: $6$d50MJLYaamCunkCY$n0yjexmtkP86y5/igOH4q.D7uWdCQYEJqoSosFqK14Nxse9fb/jrlnt/avvGXnhmPHspgduuiyd4q6HxyciYd/
+    password: $6$X5ikZc25bWKNCDtG$sHJ77S7RoP/FHFGouS0MwZ5UZFcC6sbEf0oMJeYYV.V4Wg2bSFkJhrrsT4y5w0fFgcHJ8ApbxV0WDwJ6xS/CQ/
 
 - name: Coppy Eperry's SSH keys from github
   ansible.posix.authorized_key:
@@ -21,7 +21,7 @@
     groups:
       - wheel
     name: ansible
-    password: $6$d50MJLYaamCunkCY$n0yjexmtkP86y5/igOH4q.D7uWdCQYEJqoSosFqK14Nxse9fb/jrlnt/avvGXnhmPHspgduuiyd4q6HxyciYd/
+    password: $6$eNBcl2pDtM/Bc9cZ$BxQJM.aGevMRTxbQz46J0WfbkErigFwSxpgSQp3klyfueM83g8n6fLVRUcyU3.6JiclVnsjgog9LfTOrDmKsO1
 
 - name: Copy SSH keys
   ansible.posix.authorized_key:
@@ -33,3 +33,9 @@
     content: |
       %wheel ALL=(ALL) NOPASSWD: ALL
     dest: /etc/sudoers.d/wheel-all-nopass
+
+- name: Set the root password
+#? -{The sshd configuration role should disallow root logins}
+  ansible.builtin.user:
+    user: root
+    password: $6$fQ.TeqWwdAWIX.Pi$DjUzVO8y3gnlfCeqybQxJnUfY1q3mi8.076lRMR4CYfsQUtZXCbVVIQTnCjtHNWmIoGXnHQZjijQurkIRyMBn0
