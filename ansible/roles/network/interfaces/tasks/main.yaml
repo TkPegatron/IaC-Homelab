@@ -11,3 +11,7 @@
     ifname: "{{ item.1.ifname }}"
     method: "{{ item.1.method | default('auto') }}"
     ipv4_address: "{{ item.1.ipv4_address | default(omit) }}"
+  notify: 'reload interfaces'
+
+- name: flush handlers
+  ansible.builtin.meta: flush_handlers

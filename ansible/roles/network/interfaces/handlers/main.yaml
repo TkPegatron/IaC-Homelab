@@ -1,0 +1,8 @@
+- name: Reload altered interface
+  ansible.builtin.shell:
+    cmd: |
+      nmcli connection reload
+      {% for int in ( network | json_query('interfaces[].[uuid,vlans[].uuid][][]')) %}
+      nmcli connection down {{ int }} || true && nmcli conn up {{ int }}
+      {% endfor %}
+  listen: "reload interfaces"
