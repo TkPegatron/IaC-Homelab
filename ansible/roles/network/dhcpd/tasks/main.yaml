@@ -1,0 +1,21 @@
+- name: Install dhcpd
+  ansible.builtin.dnf:
+    name: dhcp-server
+    state: "{{ dhcpd_state }}"
+
+- name: Template dhcpd configuration
+  ansible.builtin.template:
+    src: templates/dhcpd.conf.j2
+    dest: /etc/dhcp/dhcpd.conf
+    owner: root
+    mode: 0644
+  notify: "dhcpd"
+  when: dhcpd_state == 'present'
+
+
+- name: Remove dhcpd configuration
+  ansible.builtin.file:
+    path: /etc/dhcp/dhcpd.conf
+    state: absent
+  notify: "dhcpd"
+  when: dhcpd_state != 'present'
