@@ -1,0 +1,28 @@
+---
+- name: Restart and enable pihole systemd service
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+    enabled: true
+  loop:
+    - pihole.service
+    - pihole-updategravity.timer
+  listen: "pihole"
+  become: true
+  when: pihole_state == 'present'
+  
+- name: Stop and disable pihole systemd service
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    - pihole.service
+    - pihole-updategravity.timer
+  listen: "pihole"
+  when: pihole_state != 'present'
+
+- name: Reload kernel configuration
+  ansible.builtin.shell: systemctl restart systemd-sysctl
+  listen: "sysctl"

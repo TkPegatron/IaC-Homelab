@@ -1,0 +1,95 @@
+- name: Create or remove service account
+  ansible.builtin.user:
+    name: pihole
+    state: "{{ pihole_state }}"
+    comment: "PiHole Service Account"
+    home: /var/lib/pihole
+    create_home: true
+    system: true
+  when: pihole_state == 'present'
+
+- name: Modify subuid+subgids
+  ansible.builtin.shell:
+    cmd: |
+      if {{ ((pihole_state == 'present') | string).lower() }}; then
+        if ! grep pihole /etc/subuid && ! grep pihole /etc/subgid; then
+          NEW_SUBUID=$(($(tail -1 /etc/subuid |awk -F ":" '{print $2}')+65536))
+          NEW_SUBGID=$(($(tail -1 /etc/subgid |awk -F ":" '{print $2}')+65536))
+          sudo usermod \
+            --add-subuids  ${NEW_SUBUID}-$((${NEW_SUBUID}+65535)) \
+            --add-subgids  ${NEW_SUBGID}-$((${NEW_SUBGID}+65535)) \
+            pihole
+          exit 2
+        fi
+      else
+        if grep pihole /etc/subuid && grep pihole /etc/subgid; then
+          NEW_SUBUID=$(($(tail -2 /etc/subuid |awk -F ":" '{print $2}')+65536))
+          NEW_SUBGID=$(($(tail -2 /etc/subgid |awk -F ":" '{print $2}')+65536))
+          sudo usermod \
+            --del-subuids  ${NEW_SUBUID}-$((${NEW_SUBUID}+65535)) \
+            --del-subgids  ${NEW_SUBGID}-$((${NEW_SUBGID}+65535)) \
+            pihole
+          exit 2
+        fi
+      fi
+  register: pihole_cmd_subids
+  changed_when: "pihole_cmd_subids.rc == 2"
+  failed_when: "pihole_cmd_subids.rc == 1"
+  when: pihole_state == 'present'
+
+- name: Set the SeLinux labeling context and relabel the directory
+  ansible.builtin.shell:
+    cmd: |
+      if {{ ((pihole_state == 'present') | string).lower() }}; then
+        if ! (semanage fcontext -l | grep -E '/var/lib/pihole.*container_file_t'); then
+          semanage fcontext --add --type container_file_t "/var/lib/pihole(/.+)?"
+          restorecon -Fr /var/lib/pihole
+          exit 2
+        fi
+      else
+        if (semanage fcontext -l | grep -E '/var/lib/pihole.*container_file_t'); then
+          semanage fcontext --delete --type container_file_t "/var/lib/pihole(/.+)?"
+          restorecon -Fr /var/lib/pihole
+          exit 2
+        fi
+      fi
+  register: pihole_cmd_secontext
+  changed_when: "pihole_cmd_secontext.rc == 2"
+  failed_when: "pihole_cmd_secontext.rc == 1"
+
+- name: Configure the kernel such that all ports are unprivileged
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/10-unprivileged-ports.conf
+    mode: 0644
+    owner: root
+    content: |
+      net.ipv4.ip_unprivileged_port_start = 0
+  notify: "sysctl"
+  when: pihole_state == 'present'
+
+- name: Template systemd service
+  ansible.builtin.template:
+    src: "{{ item.source }}"
+    dest: "/etc/systemd/system/{{ item.dest }}"
+    mode: 0644
+    owner: root
+  loop:
+    - source: pihole.service.j2
+      dest: pihole.service
+    - source: pihole-updategravity.service.j2
+      dest: pihole-updategravity.service
+    - source: pihole-updategravity.timer.j2
+      dest: pihole-updategravity.timer
+  notify: "pihole"
+  when: pihole_state == 'present'
+
+- name: Clean up installed configuration files
+  ansible.builtin.file: "{{ item }}"
+  loop:
+    - 'state=absent, path=/var/lib/pihole'
+    - 'state=absent, path=/etc/sysctl.d/10-unprivileged-ports.conf'
+    - 'state=absent, path=/etc/systemd/system/pihole.service'
+  notify:
+    - 'pihole'
+    - 'sysctl'
+  when: pihole_state != 'present'

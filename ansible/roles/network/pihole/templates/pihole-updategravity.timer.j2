@@ -1,0 +1,11 @@
+[Unit]
+Description=periodically update pihole gravity.
+Wants=pihole.service
+
+[Timer]
+Unit=pihole-updategravity.service
+OnBootSec=200
+OnActiveSec=86400
+
+[Install]
+WantedBy=timers.target

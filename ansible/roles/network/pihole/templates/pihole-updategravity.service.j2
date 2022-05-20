@@ -1,0 +1,13 @@
+[Unit]
+Description=Pihole DNS and Network-wide ad blocking
+Documentation=https://docs.pi-hole.net
+Wants=pihole-updategravity.timer
+
+[Service]
+User=pihole
+Group=pihole
+Type=oneshot
+ExecStart=/usr/bin/podman exec pihole pihole updateGravity
+
+[Install]
+WantedBy=multi-user.target
