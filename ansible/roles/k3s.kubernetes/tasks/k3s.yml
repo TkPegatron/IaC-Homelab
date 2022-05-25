@@ -5,6 +5,15 @@
   register: k3s_check_installed
   check_mode: false
 
+- name: Ensure that firewalld is disabled
+  ansible.builtin.systemd:
+    name: "firewalld"
+    state: stopped
+    daemon_reload: true
+    enabled: false
+  become: true
+  when: k3s_control_node
+
 - name: Set manifest facts
   ansible.builtin.set_fact:
     k3s_server_manifests_templates: []
@@ -12,7 +21,7 @@
   when: k3s_check_installed.stat.exists
 
 - name: Install Kubernetes
-  include_role:
+  ansible.builtin.include_role:
     name: xanmanning.k3s
     public: true
 
@@ -34,21 +43,6 @@
     path: "{{ playbook_dir }}/../../kubernetes/kubeconfig"
     regexp: "https://127.0.0.1:6443"
     replace: "https://{{ k3s_registration_address }}:6443"
-
-# TODO: Remove containerd-hack once k3s uses containerd 1.6+
-- name: Copy containerd-hack service
-  ansible.builtin.copy:
-    src: containerd-hack.service
-    dest: /etc/systemd/system/containerd-hack.service
-    owner: root
-    group: root
-    mode: 0644
-
-- name: Enable containerd-hack service
-  ansible.builtin.systemd:
-    name: containerd-hack
-    enabled: true
-    daemon-reload: true
 
 - name: Remove deployed manifest templates
   ansible.builtin.file:

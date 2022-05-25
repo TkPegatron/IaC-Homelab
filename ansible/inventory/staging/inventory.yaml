@@ -1,0 +1,19 @@
+all:
+  hosts:
+    alma.testing:
+    amd64-server-aa:
+      ansible_host: 192.168.122.213
+    amd64-server-bb:
+      ansible_host: 192.168.122.46
+    amd64-server-cc:
+      ansible_host: 192.168.122.115
+  children:
+    k3s-cluster:
+      children:
+        k3s-worker-nodes:
+          hosts:
+        k3s-master-nodes:
+          hosts:
+            amd64-server-aa:
+            amd64-server-bb:
+            amd64-server-cc:
