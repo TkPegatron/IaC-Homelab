@@ -17,13 +17,14 @@ define ROUTING_IFNAMES = {
 table inet fail2ban {}
 
 table inet attack-mitigation {
-  flowtable flow_table {
-    # -{ 
-    #   Utilize flowtable offloading to accelerate forwarding decisions on established connections
-    #     All interfaces on which packets are forwarded from must be in the set of devices below
-    # }
-    hook ingress priority 0; devices = { enp1s0 };
-  }
+  #? Unfortunately, flowtables are not supported in the aarch64 version of alma yet
+  #flowtable flow_table {
+  #  # -{ 
+  #  #   Utilize flowtable offloading to accelerate forwarding decisions on established connections
+  #  #     All interfaces on which packets are forwarded from must be in the set of devices below
+  #  # }
+  #  hook ingress priority 0; devices = { enp1s0 };
+  #}
   #set ipv4_martians {
   #  # - { see https://6session.wordpress.com/2009/04/08/ipv6-martian-and-bogon-filters/ }
   #  typeof ip saddr; flags interval;
@@ -51,6 +52,12 @@ table inet attack-mitigation {
   #}
   chain filter-prerouting-attack-mitigation {
     type filter hook prerouting priority -200; policy accept;
+    
+    
+    tcp sport 80 meta nftrace set 1
+    tcp dport 80 meta nftrace set 1
+
+
     # -{Offload established connections to the flowtable to accelerate forwarding decisions}
     #! hw-tc-offload not supported by virtual_Machine/USB NIC
     #?  Check with ethtool -k $ifname
@@ -63,14 +70,26 @@ table inet attack-mitigation {
     #iifname $WAN_IFNAME ip saddr @ipv4_martians counter drop
     #iifname $WAN_IFNAME ip6 saddr @ipv6_martians counter drop
     # -{Drop uninitiated non-SYN packets}
-    tcp flags & (fin|syn|rst|ack) != syn ct state new \
-      log prefix "[NFTABLES] First packet is not SYN." group 0 counter drop
+    tcp flags & (fin|syn|rst|ack) != syn ct state new counter drop # \
+      #@log prefix "[NFTABLES] First packet is not SYN." group 0 counter drop
     # -{Drop xmas attacks}
     tcp flags & (fin|syn|rst|psh|ack|urg) == fin|syn|rst|psh|ack|urg counter drop
     # -{Log all traffic coming from the wan interface for PSAD}
     #iifname wan ct state new log continue
   }
 }
+
+#table inet suricata {
+#  # -{Support table for suricata IPS}
+#  chain ips-filter-input {
+#    type filter hook input priority -10;
+#    iifname $WAN_IFNAME queue 
+#  }
+#  chain ips-filter-forward {
+#    type filter hook forward priority -10;
+#    iifname $WAN_IFNAME queue
+#  }
+#}
 
 table inet main-filter {
 
@@ -83,6 +102,7 @@ table inet main-filter {
 
   chain output-filter {
     type filter hook output priority 0; policy accept;
+    icmp type echo-request meta nftrace set 1
   }
 
   chain input-dispatch-filter {
@@ -93,6 +113,8 @@ table inet main-filter {
       new: continue, invalid: drop,
       established: accept, related: accept
     } comment "Accept established and related connections"
+
+    tcp dport 22 jump log-accept comment "Secure Shell"
 
     # -{Jumpchain for connections inbound from WAN interface}
     iifname $WAN_IFNAME jump input-filter-outside
@@ -117,7 +139,6 @@ table inet main-filter {
       nd-router-advert,
       nd-neighbor-advert
     } accept
-    tcp dport 22 accept #! REMOVE THIS LINE BEFORE FLIGHT
     # -{Allow LLMNR from chromecast for reflection}
     iifname $IOT_IFNAME ip saddr $chromecast tcp dport { llmnr } counter accept
     iifname $IOT_IFNAME ip saddr $chromecast udp dport { mdns, llmnr } counter accept
@@ -175,11 +196,23 @@ table inet main-filter {
     ct state new log group 1 accept
   }
 
-  chain forward-chain {
+  chain forward-filter-chain {
     type filter hook forward priority 0; policy drop;
 
+    # -{Allow outbound connections to be forwarded}
     iifname { $LAN_IFNAME, $WGRA_IFNAME, $MAN_IFNAME } oifname $WAN_IFNAME\
-      counter accept comment "Allow outbound traffic"
+      accept comment "Allow outbound traffic"
+
+    # -{Allow inbound initiated connections to be forwarded}
+    iifname $WAN_IFNAME ct state vmap {
+      new: continue, invalid: drop,
+      established: accept, related: accept
+    } comment "Accept established and related connections"
+
+    # -{ Allow intrainterface forwarding }
+    iifname { $LAN_IFNAME, $WGRA_IFNAME, $MAN_IFNAME } \
+    oifname { $LAN_IFNAME, $WGRA_IFNAME, $MAN_IFNAME } \
+    counter accept comment "Allow intrainterface forwarding"
 
     # -{ Allow the chromecast to make outbound connections}
     iifname $IOT_IFNAME oifname $WAN_IFNAME ip saddr $chromecast tcp dport { 80, 443 } counter accept
@@ -190,13 +223,13 @@ table inet main-filter {
 }
 
 table inet nat {
-  chain nat-prerouting {
+  chain prerouting {
     type nat hook prerouting priority -100;
     # -{Forward syncthing traffic to the kubernetes ExternalIP}
     iifname $ROUTING_IFNAMES meta l4proto { tcp, udp } th dport 22000 dnat ip to 172.21.0.1
 
     # -{Forward HTTP connections to the kubernetes ExternalIP}
-    iifname $ROUTING_IFNAMES tcp dport {80,443} dnat ip to 172.21.0.0
+    #iifname $ROUTING_IFNAMES tcp dport {80,443} dnat ip to 172.21.0.0
 
     # -{Prevent alternative nameservers}
     iifname {
@@ -205,9 +238,9 @@ table inet nat {
     } meta l4proto { tcp, udp } th dport 53 dnat ip to 172.22.0.1
   }
 
-  chain nat-postrouting {
-    type nat hook postrouting priority 0;
+  chain postrouting {
+    type nat hook postrouting priority srcnat;
     iifname $WGRA_IFNAME oifname $WGRA_IFNAME masquerade comment "Wireguard Hairpin"
-    oifname $WAN_IFNAME masquerade comment "Outbound Overload"
+    oifname $WAN_IFNAME counter masquerade comment "Outbound Overload"
   }
 }
