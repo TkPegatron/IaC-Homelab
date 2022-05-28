@@ -1,3 +1,11 @@
+- name: Ensure podman is installed
+  # install podman when needed but do not uninstall
+  ansible.builtin.dnf:
+    name: podman
+    state: present
+  notify: "pihole"
+  when: pihole_state == 'present'
+
 - name: Create or remove service account
   ansible.builtin.user:
     name: pihole
@@ -86,9 +94,9 @@
 - name: Clean up installed configuration files
   ansible.builtin.file: "{{ item }}"
   loop:
-    - 'state=absent, path=/var/lib/pihole'
-    - 'state=absent, path=/etc/sysctl.d/10-unprivileged-ports.conf'
-    - 'state=absent, path=/etc/systemd/system/pihole.service'
+    - { state: absent, path: '/var/lib/pihole' }
+    - { state: absent, path: '/etc/sysctl.d/10-unprivileged-ports.conf' }
+    - { state: absent, path: '/etc/systemd/system/pihole.service' }
   notify:
     - 'pihole'
     - 'sysctl'
