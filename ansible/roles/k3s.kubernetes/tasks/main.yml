@@ -7,6 +7,13 @@
   tags:
     - k3s
 
+- name: Ensure all nodes have iscsi utils
+  ansible.builtin.dnf:
+    name: 
+      - iscsi-initiator-utils
+      - libiscsi
+    state: present
+
 #- import_tasks: home-dns.yml
 #  when: "'k8s-0' in inventory_hostname"
 #  tags:
