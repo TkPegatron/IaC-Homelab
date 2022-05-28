@@ -17,7 +17,6 @@ stringData:
         - 172.22.0.10
         - 172.22.0.11
         - 172.22.0.12
-        - 172.22.0.20
-    PROMETHEUS_EXTERNAL_TARGETS: |
-        - kvm-xenia.int.zynthovian.xyz
-        - kvm-legion.int.zynthovian.xyz
+#    PROMETHEUS_EXTERNAL_TARGETS: |
+#        - kvm-xenia.int.zynthovian.xyz
+#        - kvm-legion.int.zynthovian.xyz
