@@ -10,11 +10,5 @@
       pause:
         seconds: 5
   roles:
+    - ha-api
     - k3s.kubernetes
-  tasks:
-    - name: Install ISCSI Utils
-      community.general.rpm_ostree_pkg:
-        name:
-          - libiscsi
-          - libiscsi-utils
-          - iscsi-initiator-utils

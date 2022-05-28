@@ -12,6 +12,7 @@ k3s_server:
     - "{{ k3s_registration_address }}"
   docker: false
   flannel-backend: "none"
+  https-listen-port: 6445
   disable:
     - flannel
     - traefik

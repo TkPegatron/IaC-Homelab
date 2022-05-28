@@ -1,12 +1,23 @@
-- name: "Configure AlmaTest"
-  gather_facts: false
-  hosts: alma.testing
-  become: true
+#- name: "Configure AlmaTest"
+#  gather_facts: false
+#  hosts: alma.testing
+#  become: true
+#  roles:
+#    - common/users
+#    - common/distros/rhel
+#    - network/interfaces
+#    #- network/nftables
+#    - network/fail2ban
+#    - network/dhcpd
+#    - network/pihole
+#    
+#    
+#    #- network/bird
+#    #- common/sshd_mfa
+
+- name: Inventory fact filtering
+  hosts: k3s-master-nodes
   roles:
-    - common/users
-    #- common/sshd_mfa
-    - network/interfaces
-    - network/nftables
-    - network/fail2ban
-    #- network/bird
-    
+    #- common/users
+    - ha-api
+    - k3s.kubernetes
