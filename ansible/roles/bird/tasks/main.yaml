@@ -1,17 +1,14 @@
----
-- name: Save some time by checking for bird first
-  ansible.builtin.command:
-    cmd: which bird
-  register: which_bird
+---  
 
-- name: "Include pkg tasks for os_family"
-  when: which_bird.rc == 1
-  ansible.builtin.include_tasks:
-    file: "pkg.{{ ansible_os_family }}.{{ ansible_pkg_mgr }}.yaml"
+#- name: "Include pkg tasks for os_family"
+#  when: which_bird.rc == 1
+#  ansible.builtin.include_tasks:
+#    file: "pkg.{{ ansible_os_family }}.{{ ansible_pkg_mgr }}.yaml"
 
-#- name: "(DEBUG) Print templated file"
-#  debug:
-#    msg: "{{ lookup('template','bird.conf.j2') }}"
+- name: "Install prerequisite packages"
+  ansible.builtin.dnf:
+    name: bird
+    state: "{{ bgp_state|default('absent') }}"
 
 - name: "Template BIRD configuration"
   ansible.builtin.template:
@@ -27,5 +24,6 @@
 - name: "Ensure BIRD configuration state matches"
   ansible.builtin.file:
     path: "/etc/bird.conf"
-    state: "{{ bgp_state | default('absent') | replace('present','file') }}"
+    state: absent
   notify: "restart bird"
+  when: ( bgp_state | default('absent') ) != 'present'

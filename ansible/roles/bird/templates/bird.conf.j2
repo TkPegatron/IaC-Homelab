@@ -1,5 +1,5 @@
 log syslog all;
-router id {{ (ansible_all_ipv4_addresses | ansible.netcommon.ipaddr(network_facts.control_plane_prefix) | list)[0] }};
+router id {{ (ansible_all_ipv4_addresses | ansible.utils.ipaddr(network_facts.control_plane_prefix) | list)[0] }};
 
 protocol device {
   scan time 10;
@@ -58,12 +58,11 @@ template bgp internal_bgp {
 
 {#
 TODO: Add support for IPv6
-  - Check hostname is underscored
 #}
 {% for peer in ibgp_peers %}
 protocol bgp {{ peer.name | replace('-','_') }} from internal_bgp {
-  local {{ (ansible_all_ipv4_addresses | ansible.netcommon.ipaddr(network_facts.control_plane_prefix) | list)[0] }} as {{ibgp_asn}};
-  neighbor {{ peer.ip4_cidr_address | ansible.netcommon.ipv4('address') }} as {{ibgp_asn}};
+  local {{ (ansible_all_ipv4_addresses | ansible.utils.ipaddr(network_facts.control_plane_prefix) | list)[0] }} as {{ ibgp_asn }};
+  neighbor {{ peer.ipv4_cidr_address | ansible.utils.ipv4('address') }} as {{ ibgp_asn }};
 {% if peer.password is defined %}
   "{{ peer.password }}";
 {% endif %}
@@ -90,7 +89,7 @@ protocol bfd {
 
 {% for peer in ibgp_peers %}
 {%  if (peer.bfd | default(true)) %}
-    neighbor {{ peer.ip4_cidr_address | ansible.netcommon.ipv4('address') }};
+    neighbor {{ peer.ipv4_cidr_address | ansible.utils.ipv4('address') }};
 {%  endif %}
 {%endfor%}
 };
