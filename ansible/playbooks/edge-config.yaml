@@ -1,34 +1,55 @@
 - name: "Configure edge firewall"
   hosts: rpi-edge-fw.int.zynthovian.xyz
+  gather_facts: true
   become: true
   roles:
+    #- common/users
+    #- common/distros/rhel
+    #- common/sshd_mfa
+    #- network/interfaces
+    #- network/nftables
+    #- network/fail2ban
+    #- network/dhcpd
+    #- network/pihole
+    #- network/bird
     - bird
   handlers:
-    - name: "Restart DNS server"
-      ansible.builtin.service:
-        name: pihole
-        state: restarted
+    - name: Reload kernel configuration
+      ansible.builtin.shell: systemctl restart systemd-sysctl
+      listen: "sysctl"
+  #  - name: "Restart DNS server"
+  #    ansible.builtin.service:
+  #      name: pihole
+  #      state: restarted
   tasks:
-    - name: "Import ingress hostnames from kubernetes"
-      block:
-        #- name: "Check for the presence of a kubeconfig in the cluster directory"
-        - name: "Export all ingresses from kubernetes and filter"
-          delegate_to: localhost
-          ansible.builtin.shell:
-            cmd: |
-              export KUBECONFIG="{{ playbook_dir }}/../../kubernetes/kubeconfig"
-              kubectl get ingress -A -o json \
-                | jq '.items | map(select(.spec.ingressClassName=="nginx")) | [{"name": .[].spec.rules[0].host, "ip": .[].status.loadBalancer.ingress[0].ip}] | unique'
-          register: ingresses_json
-        - name: "[Debug] Display json"
-          ansible.builtin.debug:
-            msg: "{{ ingresses_json.stdout | from_json }}"
-        - name: "Generate kube-ingresses hosts file"
-          ansible.builtin.copy:
-            content: |
-              # -- { Kubernetes Hosts } -- #
-              {% for host in ( ingresses_json.stdout | from_json ) %}
-              {{ host.ip }}      {{ host.name }}
-              {% endfor %}
-            dest: "/opt/pihole-etc/pihole/kubernetes.list"
-          notify: "Restart DNS server"
+    - name: Tune the kernel for routing
+      ansible.builtin.copy:
+        content: |
+          # -{Allow forwarfing on all ip families}
+          net.ipv4.conf.all.forwarding = 1
+          net.ipv6.conf.all.forwarding = 1
+        dest: /etc/sysctl.d/99-ip-all-forwarding.conf
+      notify: sysctl
+  #  - name: "Import ingress hostnames from kubernetes"
+  #    block:
+  #      #- name: "Check for the presence of a kubeconfig in the cluster directory"
+  #      - name: "Export all ingresses from kubernetes and filter"
+  #        delegate_to: localhost
+  #        ansible.builtin.shell:
+  #          cmd: |
+  #            export KUBECONFIG="{{ playbook_dir }}/../../kubernetes/kubeconfig"
+  #            kubectl get ingress -A -o json \
+  #              | jq '.items | map(select(.spec.ingressClassName=="nginx")) | [{"name": .[].spec.rules[0].host, "ip": .[].status.loadBalancer.ingress[0].ip}] | unique'
+  #        register: ingresses_json
+  #      - name: "[Debug] Display json"
+  #        ansible.builtin.debug:
+  #          msg: "{{ ingresses_json.stdout | from_json }}"
+  #      - name: "Generate kube-ingresses hosts file"
+  #        ansible.builtin.copy:
+  #          content: |
+  #            # -- { Kubernetes Hosts } -- #
+  #            {% for host in ( ingresses_json.stdout | from_json ) %}
+  #            {{ host.ip }}      {{ host.name }}
+  #            {% endfor %}
+  #          dest: "/opt/pihole-etc/pihole/kubernetes.list"
+  #        notify: "Restart DNS server"

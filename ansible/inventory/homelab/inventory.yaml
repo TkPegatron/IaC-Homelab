@@ -1,31 +1,20 @@
 ---
 all:
   hosts:
-    alma.testing:
-  #hosts:
-  #  rpi-edge-fw.int.zynthovian.xyz:
-  #  amd64-server-b5915c.int.zynthovian.xyz:
-  #    ansible_host: 172.22.0.10
-  #  amd64-server-aa.int.zynthovian.xyz:
-  #    ansible_host: 10.10.0.5
-  #  amd64-worker-00.int.zynthovian.xyz:
-  #    ansible_host: 10.10.0.10
-  #  arm64-worker-3c8ea8.int.zynthovian.xyz:
-  #    ansible_host: 172.22.0.59
-  #  kvm-xenia.int.zynthovian.xyz:
-  #  kvm-legion.int.zynthovian.xyz:
-  #children:
-  #  k3s-cluster:
-  #    children:
-  #      k3s-worker-nodes:
-  #        hosts:
-  #          amd64-worker-00.int.zynthovian.xyz:
-  #          arm64-worker-3c8ea8.int.zynthovian.xyz:
-  #      k3s-master-nodes:
-  #        hosts:
-  #          amd64-server-b5915c.int.zynthovian.xyz:
-  #          #amd64-server-aa.int.zynthovian.xyz:
-  #  kvm_hypervisors:
-  #    hosts:
-  #      kvm-xenia.int.zynthovian.xyz:
-  #      kvm-legion.int.zynthovian.xyz:
+    rpi-edge-fw.int.zynthovian.xyz:
+    amd64-server-b5915c.int.zynthovian.xyz:
+      ansible_host: 172.22.0.10
+    amd64-server-7f97c6.int.zynthovian.xyz:
+      ansible_host: 172.22.0.11
+    amd64-server-a2e7bb.int.zynthovian.xyz:
+      ansible_host: 172.22.0.12
+  children:
+    k3s-cluster:
+      children:
+        k3s-worker-nodes:
+          hosts:
+        k3s-master-nodes:
+          hosts:
+            amd64-server-b5915c.int.zynthovian.xyz:
+            amd64-server-7f97c6.int.zynthovian.xyz:
+            amd64-server-a2e7bb.int.zynthovian.xyz:
