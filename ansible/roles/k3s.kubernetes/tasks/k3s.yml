@@ -41,8 +41,10 @@
   run_once: true
   ansible.builtin.replace:
     path: "{{ playbook_dir }}/../../kubernetes/kubeconfig"
-    regexp: "https://127.0.0.1:6443"
+    regexp: "https://127.0.0.1:{{ k3s_server['https-listen-port']|default('6443') }}"
     replace: "https://{{ k3s_registration_address }}:6443"
+
+# TODO: Integrate haproxy with this role
 
 - name: Remove deployed manifest templates
   ansible.builtin.file:
