@@ -82,7 +82,7 @@ spec:
         storage:
           volumeClaimTemplate:
             spec:
-              storageClassName: "nfs-client"
+              storageClassName: "longhorn"
               resources:
                 requests:
                   storage: 1Gi
@@ -198,10 +198,10 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: "nfs-client"
+              storageClassName: "longhorn"
               resources:
                 requests:
-                  storage: 10Gi
+                  storage: 20Gi
         additionalScrapeConfigs:
           - job_name: node-exporter
             honor_timestamps: true
