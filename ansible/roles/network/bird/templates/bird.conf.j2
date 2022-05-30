@@ -31,7 +31,9 @@ protocol kernel kernel_v6 {
 };
 
 template bgp internal_bgp {
+{%  if ibgp_passwd is defined %}
   password "{{ ibgp_passwd }}";
+{%  endif %}
   startup hold time 0;
   graceful restart on;
   advertise hostname;
@@ -84,7 +86,9 @@ protocol bfd {
         min tx interval 100 ms;
         idle tx interval 300 ms;
         multiplier 10;
+{%  if ibgp_passwd is defined %}
         password "{{ibgp_passwd}}";
+{%  endif %}
     };
 
 {% for peer in ibgp_peers %}

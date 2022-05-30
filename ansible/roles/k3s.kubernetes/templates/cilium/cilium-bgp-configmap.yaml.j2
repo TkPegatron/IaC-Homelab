@@ -9,7 +9,9 @@ data:
 {% for router in ibgp_routers %}
     - peer-address: {{ router }}
       peer-asn: {{ ibgp_asn }}
+{%  if ibgp_passwd is defined %}
       password: {{ ibgp_passwd }}
+{%  endif %}
       my-asn: {{ ibgp_asn }}
 {% endfor %}
     address-pools:

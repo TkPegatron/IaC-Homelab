@@ -176,6 +176,7 @@ table inet main-filter {
     tcp dport 22 jump log-accept comment "Secure Shell"
     tcp dport {80,443} jump log-accept comment "Webserver/Pihole"
     tcp dport {8080,8443} jump log-accept comment "Unifi-controller"
+    tcp dport 179 jump log-accept comment "BGP"
     # -{Return unmatched to previous chain}
     return
   }
