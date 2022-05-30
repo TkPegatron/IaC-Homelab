@@ -1,0 +1,75 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: hajimari
+  namespace: eperry
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://hajimari.io
+      chart: hajimari
+      version: 1.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: hajimari-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    image:
+      repository: ghcr.io/toboshii/hajimari
+      tag: v0.2.0
+    env:
+      TZ: "America/Detroit"
+    hajimari:
+      defaultEnable: false
+      namespaceSelector:
+        matchNames:
+          - eperry
+          - common-media
+          - longhorn-system
+      groups:
+        - name: Cloud
+          links:
+            - name: Cloudflare
+              url: "https://dash.cloudflare.com"
+        - name: Reading
+          links:
+            - name: Reddit
+              url: "http://reddit.com"
+        - name: Tech
+          links:
+            - name: Hacker News
+              url: "https://news.ycombinator.com/"
+      name: "Elliana Perry"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128M
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          nginx.ingress.kubernetes.io/auth-url: |-
+            http://ak-outpost-authentik-embedded-outpost.applications.svc.cluster.local:9000/akprox/auth/nginx
+          nginx.ingress.kubernetes.io/auth-signin: |-
+            https://hajimari.${SECRET_PUBLIC_DOMAIN}/akprox/start?rd=$escaped_request_uri
+          nginx.ingress.kubernetes.io/auth-response-headers: |-
+            Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-email,X-authentik-name,X-authentik-uid
+          nginx.ingress.kubernetes.io/auth-snippet: |
+            proxy_set_header X-Forwarded-Host $http_host;
+        hosts:
+          - host: &host "hajimari.${SECRET_PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: hajimari
+                    port:
+                      number: 3000
+        tls:
+          - hosts:
+              - *host
