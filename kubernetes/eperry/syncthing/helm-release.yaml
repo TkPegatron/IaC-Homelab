@@ -33,9 +33,7 @@ spec:
         loadBalancerIP: "172.21.0.1"
         annotations:
           metallb.universe.tf/allow-shared-ip: syncthing
-    podAnnotations:
-      configmap.reloader.stakater.com/reload: "syncthing-config-file"
     persistence:
       data:
         enabled: true
-        exsistingClaim: syncthing
+        existingClaim: eperry-syncthing-data
