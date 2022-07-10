@@ -25,39 +25,18 @@ table inet attack-mitigation {
   #  # }
   #  hook ingress priority 0; devices = { enp1s0 };
   #}
-  #set ipv4_martians {
-  #  # - { see https://6session.wordpress.com/2009/04/08/ipv6-martian-and-bogon-filters/ }
-  #  typeof ip saddr; flags interval;
-  #  elements = {
-  #    0.0.0.0/32, 127.0.0.0/8,
-  #    10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16,
-  #    240.0.0.0/4, 224.0.0.0/4, 223.255.255.0/24,
-  #    198.18.0.0/15, 192.0.2.0/24, 192.0.0.0/24,
-  #    169.254.0.0/16, 128.0.0.0/16
-  #  }
-  #}
-  #set ipv6_martians {
-  #  # - { see https://6session.wordpress.com/2009/04/08/ipv6-martian-and-bogon-filters/ }
-  #  typeof ip6 saddr; flags interval;
-  #  elements = {
-  #    ::/0, ::/96, ::/128,
-  #    ::ffff:0.0.0.0/96, ::224.0.0.0/100,
-  #    ::127.0.0.0/104, ::0.0.0.0/104, ::255.0.0.0/104,
-  #    3ffe::/16,
-  #    2001:db8::/32, 2002:e000::/20, 2002:7f00::/24,
-  #    2002:0000::/24, 2002:ff00::/24, 2002:0a00::/24,
-  #    2002:ac10::/28, 2002:c0a8::/32,
-  #    fe80::/10, fec0::/10, ff00::/8
-  #  }
-  #}
   chain filter-prerouting-attack-mitigation {
     type filter hook prerouting priority -200; policy accept;
     
     
-    tcp sport 80 meta nftrace set 1
-    tcp dport 80 meta nftrace set 1
-
-
+    icmp type echo-request counter meta nftrace set 1
+    ip6 nexthdr icmpv6 counter meta nftrace set 1
+    
+    # ---{ Allow duplicate ICMPv4 and ICMPv6 echo-replies }
+    #? Duplicate replies on multicast/broadcast will be blocked by ct state invalid rules
+    icmp type echo-reply ct state invalid accept
+    icmpv6 type echo-reply ct state invalid accept
+    
     # -{Offload established connections to the flowtable to accelerate forwarding decisions}
     #! hw-tc-offload not supported by virtual_Machine/USB NIC
     #?  Check with ethtool -k $ifname
@@ -66,9 +45,6 @@ table inet attack-mitigation {
     iiftype loopback accept comment "Accept any loopback traffic"
     # -{Drop anything with an invalid CT state}
     ct state invalid counter drop
-    # -{Drop bogons}
-    #iifname $WAN_IFNAME ip saddr @ipv4_martians counter drop
-    #iifname $WAN_IFNAME ip6 saddr @ipv6_martians counter drop
     # -{Drop uninitiated non-SYN packets}
     tcp flags & (fin|syn|rst|ack) != syn ct state new counter drop # \
       #@log prefix "[NFTABLES] First packet is not SYN." group 0 counter drop
@@ -102,20 +78,39 @@ table inet main-filter {
 
   chain output-filter {
     type filter hook output priority 0; policy accept;
-    icmp type echo-request meta nftrace set 1
   }
 
   chain input-dispatch-filter {
     type filter hook input priority 0; policy drop;
 
-    # Match packets based on their contrack state
+    iiftype loopback accept comment "Accept any loopback traffic"
+
+
+    # ---{ Allow ICMPv4 and ICMPv6 echo-replies }
+    #? Duplicate replies on multicast/broadcast will be blocked by ct state invalid rules
+    icmp type {echo-request,echo-reply} ct state invalid accept
+    icmpv6 type {echo-request,echo-reply} ct state invalid accept
+    # ---{ Allow icmpv4 echo-requests }
+    #
+    icmp type echo-request accept
+    #
+    # ---{ ICMPv6 }
+    #
+    icmpv6 type {
+      echo-request,nd-neighbor-solicit,nd-neighbor-advert,nd-router-solicit,
+      nd-router-advert,mld-listener-query,destination-unreachable,
+      packet-too-big,time-exceeded,parameter-problem
+    } accept
+    #
+    # ---{ Match packets based on their contrack state }
+    #
     ct state vmap {
       new: continue, invalid: drop,
       established: accept, related: accept
     } comment "Accept established and related connections"
-
-    tcp dport 22 jump log-accept comment "Secure Shell"
-
+    #
+    # --- { Chain Jump Verdict Specification }
+    #
     # -{Jumpchain for connections inbound from WAN interface}
     iifname $WAN_IFNAME jump input-filter-outside
     # Connections from AP's are allowed to unifi controller
@@ -124,21 +119,13 @@ table inet main-filter {
     iifname { $LAN_IFNAME, $MAN_IFNAME } jump input-filter-trusted
     # -{Jumpchan for connections inbound from all sources}
     jump input-filter-any
-
-    # -{Reject any traffic returning from interface chains}
+    #
+    # ---{ Final Verdict }
+    # -{Reject any traffic returning from other chains}
     log group 2 reject with icmpx type admin-prohibited
   }
 
   chain input-filter-any {
-    # -{Allow icmpv4 echo-requests}
-    icmp type echo-request accept
-    # -{Allow ICMPv6 echo-requests and neighbor discovery}
-    icmpv6 type { 
-      nd-neighbor-solicit,
-      echo-request,
-      nd-router-advert,
-      nd-neighbor-advert
-    } accept
     # -{Allow LLMNR from chromecast for reflection}
     iifname $IOT_IFNAME ip saddr $chromecast tcp dport { llmnr } counter accept
     iifname $IOT_IFNAME ip saddr $chromecast udp dport { mdns, llmnr } counter accept
@@ -160,10 +147,6 @@ table inet main-filter {
       nd-router-advert,
       nd-neighbor-advert
     } limit rate 5/second accept
-    # -{Allow SSH connections from CISP}
-    ip saddr 67.211.160.100/32 tcp dport 22 \
-      counter jump log-accept \
-      comment "Allow SSH connections from CISP"
     # -{Return unmatched to previous chain}
     return
   }
